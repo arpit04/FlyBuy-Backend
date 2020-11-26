@@ -19,10 +19,12 @@ def create_app():
 
     from src import database
     from src.routes.views import view
+    from src.routes.admin.views import admin_view
 
     app = Flask(__name__)
 
     app.register_blueprint(view)
+    app.register_blueprint(admin_view)
 
     app.config["SECRET_KEY"] = "verysecretkey"
     app.config["SQLALCHEMY_DATABASE_URI"] = database.uri_string

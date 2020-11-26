@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,7 +22,6 @@
     <link href="{{ url_for('static', filename='assets/css/plugins/spacing-and-height.css') }}" rel="stylesheet">
     <!-- Style CSS -->
     <link href="{{ url_for('static', filename='assets/css/theme-modules.css') }}" rel="stylesheet">
-    <!-- <link href="assets/css/main.css" rel="stylesheet"> -->
     <link href="{{ url_for('static', filename='assets/css/custom.css') }}" rel="stylesheet">
 </head>
 
@@ -58,7 +58,7 @@
                                 aria-haspopup="true" aria-expanded="false">Home</a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkShop">
                                 <a class="dropdown-item" href="{{ url_for('view.dashboard') }}">1 - Home</a>
-                                <a class="dropdown-item" href="home-2.html">2 - Home</a>
+                                <a class="dropdown-item" href="{{ url_for('view.home2') }}">2 - Home</a>
                             </div>
                         </li>
 
@@ -177,12 +177,9 @@
 
                             <h5 class="widget-title">Categories</h5>
                             <ul class="category-list list-unstyled mb-0">
-                                <li> <a href="#">Clothings</a> </li>
-                                <li> <a href="#">Footwears</a> </li>
-                                <li> <a href="#">Electronics</a> </li>
-                                <li> <a href="#">Travel</a> </li>
-                                <li> <a href="#">Toys</a> </li>
-                                <li> <a href="#">Home Living</a> </li>
+                                {% for category in categories %}
+                                <li> <a href="{{ url_for('view.product', category=category) }}"></a>{{ category }}</li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>
@@ -200,18 +197,18 @@
                     <div class="product col-md-6 col-lg-3">
                         <div class="product-img-wrapper">
                             <a href="{{ url_for('view.product') }}">
-                                <img width="480" height="536" src="{{ url_for('static', filename='assets/images/products/') }}{{ product }}" alt="Product image">
+                                <img width="480" height="536" src="{{ url_for('static', filename='assets/images/products/') }}{{ product['image'] }}" alt="Product image">
                             </a>
                             <a rel="nofollow" href="shop-single-product.html" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                                 to cart</a>
                         </div>
                         <div class="product-white-wrapper align-items-center">
                             <h6 class="product-title">
-                                <a href="{{ url_for('view.product') }}"> Product Name</a>
+                                <a href="{{ url_for('view.product') }}">{{ product['name'] }}</a>
                             </h6>
                             <span class="price">
                                 <span class="amount">
-                                    <span class="currencySymbol">$</span>69.00</span>
+                                    <span class="currencySymbol">$</span>{{ product['price'] }}</span>
                             </span>
                         </div>
                     </div>

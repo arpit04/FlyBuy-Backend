@@ -18,13 +18,43 @@ view = Blueprint("view", __name__)
 @view.route("/dashboard")
 def dashboard():
     is_login=session.get("logged_in")
-    products=['1.jpg','2.jpg','3.jpg','4.jpg','5.jpg','6.jpg','12.jpg','13.jpg']
-    return render_template("dashboard.html", is_login=is_login, products=products)
+    products = [
+        {'image':'1.jpg','name':'a','price':'69.00'},
+        {'image':'2.jpg','name':'b','price':'79.00'},
+        {'image':'3.jpg','name':'c','price':'89.00'},
+        {'image':'4.jpg','name':'d','price':'99.00'},
+        {'image':'5.jpg','name':'e','price':'109.00'},
+        {'image':'6.jpg','name':'f','price':'119.00'},
+        {'image':'12.jpg','name':'g','price':'129.00'},
+        {'image':'13.jpg','name':'h','price':'139.00'},
+    ]
+    categories = ["Clothings","Footwears","Electronics","Travel","Toys","Home Living"]
+    return render_template("dashboard.html", is_login=is_login,products=products,categories=categories)
 
 @view.route("/product")
 def product():
     pass
     return render_template("shop-single-product.html")
+
+@view.route("/home2")
+def home2():
+    is_login=session.get("logged_in")
+    products = [
+        {'image':'1.jpg','name':'a','price':'69.00'},
+        {'image':'2.jpg','name':'b','price':'79.00'},
+        {'image':'3.jpg','name':'c','price':'89.00'},
+        {'image':'4.jpg','name':'d','price':'99.00'},
+        {'image':'5.jpg','name':'e','price':'109.00'},
+        {'image':'6.jpg','name':'f','price':'119.00'},
+        {'image':'7.jpg','name':'g','price':'129.00'},
+        {'image':'8.jpg','name':'h','price':'139.00'},
+        {'image':'9.jpg','name':'i','price':'149.00'},
+        {'image':'10.jpg','name':'j','price':'159.00'},
+        {'image':'11.jpg','name':'k','price':'169.00'},
+        {'image':'12.jpg','name':'l','price':'179.00'},
+    ]
+    categories = ["Bags","Boot","Clothing","Exclusive","Sandals","Shoes","Sunglasses","Trending","Women"]
+    return render_template("shop-right-sidebar.html", is_login=is_login,products=products,categories=categories)
 
 @view.route("/forgot_pass")
 def forgot_pass():
@@ -55,6 +85,11 @@ def user_logout():
     session["logged_in"] = False
     return redirect(url_for("view.user"))
 
+
+@view.route("/search/", methods=["POST"])
+def search():
+    print(request.form["search"])
+    return redirect(url_for("view.home2"))
 
 @view.route("/user_login/", methods=["POST"])
 def user_login():
@@ -99,33 +134,34 @@ def registration():
         name = request.form["name"]
         email = request.form["email"]
         password_hash = request.form["password"]
-        created_at = datetime.datetime.now()
-        create_user = models.User(
-            name=name,
-            email=email,
-            password_hash=ph.hash(password_hash),
-            email_validated=False,
-            created_at=created_at,
-        )
-        db_session.add(create_user)
-        db_session.flush()
+        print(name, email, password_hash)
+        # created_at = datetime.datetime.now()
+        # create_user = models.User(
+        #     name=name,
+        #     email=email,
+        #     password_hash=ph.hash(password_hash),
+        #     email_validated=False,
+        #     created_at=created_at,
+        # )
+        # db_session.add(create_user)
+        # db_session.flush()
     except Exception as e:
         print(e)
         print("failed to create user")
         return redirect(url_for("view.register"))
 
-    try:
-        db_session.commit()
-        res = verification_mail.send_mail(create_user.id, create_user.name, create_user.email, email_type="new-user")
-        if not res:
-            print("invalid email or server failed to send verification mail")
-            return render_template("register.html", message="invalid email or server failed to send verification mail")
-        return redirect(url_for("view.user"))
-    except Exception as e:
-        print(e)
-        print("failed to store user in database")
-        db_session.rollback()
-        return redirect(url_for("view.register"))
+    # try:
+    #     db_session.commit()
+    #     res = verification_mail.send_mail(create_user.id, create_user.name, create_user.email, email_type="new-user")
+    #     if not res:
+    #         print("invalid email or server failed to send verification mail")
+    #         return render_template("register.html", message="invalid email or server failed to send verification mail")
+    #     return redirect(url_for("view.user"))
+    # except Exception as e:
+    #     print(e)
+    #     print("failed to store user in database")
+    #     db_session.rollback()
+    #     return redirect(url_for("view.register"))
 
 @view.route("/reset_password/", methods=["GET", "POST"])
 def reset_password():
