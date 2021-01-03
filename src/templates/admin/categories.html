@@ -42,19 +42,19 @@
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="index.html">Dashboard</a>
+                            <a class="nav-link" href="{{ url_for('admin_view.admin_dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="categories.html">Categories</a>
+                            <a class="nav-link" href="{{ url_for('admin_view.categories') }}">Categories</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="products.html">Products</a>
+                            <a class="nav-link" href="{{ url_for('admin_view.products') }}">Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="users.html">Users</a>
+                            <a class="nav-link" href="{{ url_for('admin_view.users') }}">Users</a>
                         </li>
                         <li class="nav-item login-btn">
-                            <a href="./login/index.html" class="btn btn-fill"> Logout
+                            <a href="{{ url_for('admin_view.admin_logout') }}" class="btn btn-fill"> Logout
                             </a>
                         </li>
                     </ul>
@@ -71,7 +71,7 @@
                 <div class="section-title">
                     <h5>Categories list</h5>
                     <div class="button-outer">
-                        <a type="button" href="add-category.html" class="btn btn-lime">Add Category</a>
+                        <button type="button" id="add_category" data-toggle="modal" data-id="1" data-target="#category_add" class="delete btn btn-lime btn-xs">Add Category</button>
                     </div>
                 </div>
                 <input type="text" id="myInput" placeholder="Search for">
@@ -173,6 +173,48 @@
 </div>
 <!-- Delete Modal End -->
 
+<div class="modal fade" id="category_add">
+    <div class="modal-dialog modal-sm delete-modal">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h6 class="modal-title">Add Category</h6>
+            </div>
+            <!-- Modal body -->
+            <form class="add_category" role="form">
+            <div class="modal-body">
+                <input class="input" type="text" name="category_name" placeholder="category">
+                <button class="btn btn-outline-primary" type="submit" id='add_category'>Add</button>
+            </div>
+            </form>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <!-- <a type="button" id="add_modal_category" data-id="" class="btn btn-lime btn-xs" >Add</a> -->
+                <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+    $(function(){
+      $('#add_category').click(function(){
+        var cat = $('#category_name').val();
+        console.log(cat);
+        // $.ajax({
+        //   url: '/signUpUser',
+        //   data: $('form').serialize(),
+        //   type: 'POST',
+        //   success: function(response){
+        //     console.log(response);
+        //   },
+        //   error: function(error){
+        //     console.log(error);
+        //   }
+        // });
+      });
+      });
+    </script>
     <!-- ================================================== -->
     <!-- Placed js files at the end of the document so the pages load faster -->
     <script type="text/javascript" src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>

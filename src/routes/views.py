@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify
 from src.database import db_session
 import src.models as models
 from datetime import datetime
@@ -95,17 +95,17 @@ def search():
 def user_login():
     email = request.form["email"]
     password = request.form["password"]
-
     user = (
         db_session.query(models.User).filter(models.User.email == email).one_or_none()
     )
     if user is None:
-        return redirect(url_for("view.user"))
-
+        return "no user found", 400
     try:
         if ph.verify(user.password_hash, password) and user.email_validated:
             session["logged_in"] = True
-            return redirect(url_for("view.dashboard"))
+            # return redirect(url_for("view.dashboard"))
+            resp = jsonify(success=True)
+            return resp
     except Exception as e:
         print(e)
 
@@ -134,34 +134,35 @@ def registration():
         name = request.form["name"]
         email = request.form["email"]
         password_hash = request.form["password"]
-        print(name, email, password_hash)
-        # created_at = datetime.datetime.now()
-        # create_user = models.User(
-        #     name=name,
-        #     email=email,
-        #     password_hash=ph.hash(password_hash),
-        #     email_validated=False,
-        #     created_at=created_at,
-        # )
-        # db_session.add(create_user)
-        # db_session.flush()
+        user_type = request.form["user_type"]
+        created_at = datetime.datetime.now()
+        create_user = models.User(
+            name=name,
+            email=email,
+            password_hash=ph.hash(password_hash),
+            email_validated=False,
+            user_type=user_type,
+            created_at=created_at,
+        )
+        db_session.add(create_user)
+        db_session.flush()
     except Exception as e:
         print(e)
         print("failed to create user")
         return redirect(url_for("view.register"))
 
-    # try:
-    #     db_session.commit()
-    #     res = verification_mail.send_mail(create_user.id, create_user.name, create_user.email, email_type="new-user")
-    #     if not res:
-    #         print("invalid email or server failed to send verification mail")
-    #         return render_template("register.html", message="invalid email or server failed to send verification mail")
-    #     return redirect(url_for("view.user"))
-    # except Exception as e:
-    #     print(e)
-    #     print("failed to store user in database")
-    #     db_session.rollback()
-    #     return redirect(url_for("view.register"))
+    try:
+        db_session.commit()
+        res = verification_mail.send_mail(create_user.id, create_user.name, create_user.email, email_type="new-user")
+        if not res:
+            print("invalid email or server failed to send verification mail")
+            return render_template("register.html", message="invalid email or server failed to send verification mail")
+        return redirect(url_for("view.user"))
+    except Exception as e:
+        print(e)
+        print("failed to store user in database")
+        db_session.rollback()
+        return redirect(url_for("view.register"))
 
 @view.route("/reset_password/", methods=["GET", "POST"])
 def reset_password():

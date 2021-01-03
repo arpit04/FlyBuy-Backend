@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Login To Fly Buy</title>
+    <title>Admin Login</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->
@@ -24,9 +24,9 @@
                     <img src="{{ url_for('static', filename='assets/images/logo_1.png') }}" alt="logo">
                 </div>
 
-                <form class="login-form validate-form" id="login-form">
+                <form method="POST" action="{{ url_for('admin_view.admin_login') }}" class="login-form validate-form">
                     <span class="login-form-title">
-                        Login To Fly Buy {{ url_for('view.registration') }}
+                        Login To Fly Buy
                     </span>
 
                     <div class="wrap-input validate-input" data-validate="Valid email is required: ex@abc.xyz">
@@ -46,27 +46,16 @@
                     </div>
 
                     <div class="container-login-form-btn">
-                        <button type="button" data-type="login" class="btn btn-info submit-form">
+                        <button type="submit" class="btn btn-info">
                             Login
                         </button>
                     </div>
-
                     <div class="text-center p-t-12">
                         <a class="txt2" href="{{ url_for('view.forgot_pass') }}">
                             Having proble in login?
                         </a>
                     </div>
-                    <div class="text-center">
-                        <span class="txt1">
-                            or
-                        </span>
-                    </div>
-                    <div class="text-center">
-                        <a class="txt2" href="{{ url_for('view.register') }}">
-                            Create your Account
-                            <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-                        </a>
-                    </div>
+
                 </form>
             </div>
         </div>

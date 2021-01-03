@@ -10,18 +10,21 @@
         e.preventDefault();
         var check = true;
         var type = $(this).data('type');
-        console.log('here', type)
+
         check = validateAllInput();
+        console.log(check, "dsds");
         if (check) {
+            console.log(check);
             if (type == 'login') {
                 // submit login form
+                console.log("arit");
                 form = $('#login-form');
-                url = "{{ url_for('view.user_login') }}";
+                url = "/user_login/";
             }
             if (type == 'register') {
                 // submit register form
                 form = $('#register-form');
-                url = "{{ url_for('view.registration') }}";
+                url = "/registration/";
             }
             submitAjax(url, form);
         }
@@ -78,7 +81,7 @@
                 return false;
             }
             if ($(input).val() != '' && $(input).closest('.validvalidate-form').find('.password').val() != $(input).val()) {
-                console.log('here')
+
                 $(input).closest('.wrap-input').attr('data-validate', 'Password does not match.')
                 return false;
             }
@@ -113,10 +116,11 @@
             data: form.serialize(),
             success: function(data) {
                 console.log(data);
+                window.location.href = "dashboard";
                 // here is process after ajax success
             },
             error : function(data) {
-                console.log(data);
+                console.log("bbb");
                 // here is the process of after ajax fail
             }
         });

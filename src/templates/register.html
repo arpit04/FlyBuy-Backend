@@ -23,9 +23,7 @@
                 <div class="login-pic">
                     <img src="{{ url_for('static', filename='assets/images/logo_1.png') }}" alt="logo">
                 </div>
-                <div id="successAlert" class="alert alert-success" role="alert" style="display: none;">success</div>
-                <div id="errorAlert" class="alert alert-danger" role="alert" style="display: none;">success</div>
-                <form method="POST" id="register-form" class="validate-form register-form">
+                <form method="POST" action="{{ url_for('view.registration') }}" class="validate-form register-form">
                     <span class="login-form-title">
                         Register To Fly Buy
                     </span>
@@ -62,7 +60,7 @@
                     </div>
 
                     <div class="container-login-form-btn">
-                      <button class="login-form-btn submit-form" data-type="register">
+                      <button type="submit" class="btn btn-info">
                           Register
                       </button>
                     </div>
@@ -77,35 +75,12 @@
         </div>
     </div>
 
-<script type="text/javascript">
-  $(document).ready(function(){
-    $('form').on('submit', function(event){
-      $.ajax({
-        data : {
-          name: $('#nameInput').val(),
-          email: $('#emailInput').val(),
-          password: $('#passwordInput').val()
-        } ,
-        type : 'POST',
-        url : '/registration'
-      })
-      .done(function(data){
-        $('#successAlert').text(data.name).show();
-        $('#errorAlert').hide();
-      });
-      event.preventDefault();
-    });
-  });
-</script>
-
-
 <!--===============================================================================================-->
     <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
 <!--===============================================================================================-->
     <script src="{{ url_for('static', filename='assets/js/plugins/bootstrap.bundle.min.js') }}"></script>
 <!--===============================================================================================-->
     <script src="{{ url_for('static', filename='assets/js/login.js') }}"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 </body>
 </html>
