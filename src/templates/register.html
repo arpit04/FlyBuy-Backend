@@ -59,6 +59,17 @@
                         </span>
                     </div>
 
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Role</label>
+                            <select id="role" name="user_type_id" class="custom-dropdown">
+                              {% for type in user_types %}
+                                <option value="{{ type.id }}" selected>{{ type.type }}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="container-login-form-btn">
                       <button type="submit" class="btn btn-info">
                           Register

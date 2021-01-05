@@ -103,7 +103,6 @@ def user_login():
     try:
         if ph.verify(user.password_hash, password) and user.email_validated:
             session["logged_in"] = True
-            # return redirect(url_for("view.dashboard"))
             resp = jsonify(success=True)
             return resp
     except Exception as e:
@@ -125,7 +124,8 @@ def validate_user(the_token):
 def register():
     if session.get("logged_in"):
         return redirect(url_for("view.dashboard"))
-    return render_template("register.html")
+    user_types = db_session.query(models.UserType).all()
+    return render_template("register.html",user_types=user_types)
 
 
 @view.route("/registration/", methods=["GET", "POST"])
@@ -134,14 +134,14 @@ def registration():
         name = request.form["name"]
         email = request.form["email"]
         password_hash = request.form["password"]
-        user_type = request.form["user_type"]
+        user_type_id = request.form["user_type_id"]
         created_at = datetime.datetime.now()
         create_user = models.User(
             name=name,
             email=email,
             password_hash=ph.hash(password_hash),
             email_validated=False,
-            user_type=user_type,
+            user_type_id=user_type_id,
             created_at=created_at,
         )
         db_session.add(create_user)
@@ -156,7 +156,7 @@ def registration():
         res = verification_mail.send_mail(create_user.id, create_user.name, create_user.email, email_type="new-user")
         if not res:
             print("invalid email or server failed to send verification mail")
-            return render_template("register.html", message="invalid email or server failed to send verification mail")
+            return redirect(url_for("view.register"))
         return redirect(url_for("view.user"))
     except Exception as e:
         print(e)
@@ -199,7 +199,7 @@ def forgot_password():
             if not res:
                 return render_template("index.html", message="invalid email or server failed to send verification mail")
         else:
-            return render_template("register.html", message="user is not registered")
+            return redirect(url_for("view.register"))
     except Exception as e:
         print(e)
         return redirect(url_for("view.forgot_pass"))
