@@ -20,42 +20,79 @@
                       <th></th>
                   </tr>
                   <tbody id="list">
+                  {% for product in products %}
                   <tr>
-                      <td>1</td>
-                      <td>Shirt</td>
-                      <td>599</td>
-                      <td>Clothings</td>
+                      <td>{{ loop.index }}</td>
+                      <td>{{ product[0].name }}</td>
+                      <td>{{ product[0].price }}</td>
+                      <td>{{ product[1].name }}</td>
                       <td style="width:140px;">
                           <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_product" data-toggle="modal" data-id="1" data-target="#product_delete" class="delete btn btn-lime btn-xs">Delete</button>
+                              <button type="button" id="update_product" data-toggle="modal" data-id="1" data-target="#product_update{{ product[0].id }}" class="update btn btn-lime btn-xs">Edit</button>
+                              <button type="button" id="delete_product" data-toggle="modal" data-id="1" data-target="#product_delete{{ product[0].id }}" class="delete btn btn-lime btn-xs">Delete</button>
                           </div>
                       </td>
                   </tr>
-                  <tr>
-                      <td>2</td>
-                      <td>Shoes</td>
-                      <td>999</td>
-                      <td>FootWear</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_product" data-toggle="modal" data-id="1" data-target="#product_delete" class="delete btn btn-lime btn-xs">Delete</button>
+
+                  <div class="modal fade" id="product_update{{ product[0].id }}">
+                      <div class="modal-dialog modal-sm update-modal">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h6 class="modal-title">Update Product</h6>
+                              </div>
+                              <form method="POST" action="{{ url_for('admin_view.update_product') }}">
+                              <div class="modal-body">
+                                <label>product name</label>
+                                <input type="hidden" name="id" value="{{ product[0].id }}">
+                                <input type="text" class="input" name="name" value="{{ product[0].name }}">
+                                <br>
+                                <label>product price</label>
+                                <input type="text" class="input" name="price" value="{{ product[0].price }}">
+                                <br>
+                                <label>product discount</label>
+                                <input type="text" class="input" name="discount" value="{{ product[0].discount }}">
+                                <br>
+                                <label>Category</label>
+                                <select name="category_id" class="custom-dropdown">
+                                    {% for category in categories %}
+                                      {% if category.name == product[1].name %}
+                                        <option value="{{ category.id }}" selected>{{ category.name }}</option>
+                                      {% else %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                      {% endif %}
+                                    {% endfor %}
+                                </select>
+
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="submit" class="btn btn-lime btn-xs">Update</button>
+                                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
+                              </div>
+                              </form>
                           </div>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>3</td>
-                      <td>Tshirt</td>
-                      <td>399</td>
-                      <td>Clothings</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_product" data-toggle="modal" data-id="1" data-target="#product_delete" class="delete btn btn-lime btn-xs">Delete</button>
+                      </div>
+                  </div>
+
+                  <div class="modal fade" id="product_delete{{ product[0].id }}">
+                      <div class="modal-dialog modal-sm delete-modal">
+                          <div class="modal-content">
+                              <!-- Modal Header -->
+                              <div class="modal-header">
+                                  <h6 class="modal-title">Delete Product</h6>
+                              </div>
+                              <!-- Modal body -->
+                              <div class="modal-body">
+                                  <p>Do you really want to delete?</p>
+                              </div>
+                              <!-- Modal footer -->
+                              <div class="modal-footer">
+                                  <a type="button" href="{{ url_for('admin_view.delete_product', product_id=product[0].id) }}" class="btn btn-lime btn-xs" >Yes</a>
+                                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">No</button>
+                              </div>
                           </div>
-                      </td>
-                  </tr>
+                      </div>
+                  </div>
+                  {% endfor %}
                   </tbody>
               </table>
           </div>
@@ -91,24 +128,5 @@
           </nav>
       </div>
   </div>
-  <!-- Delete Modal -->
-  <div class="modal fade" id="product_delete">
-      <div class="modal-dialog modal-sm delete-modal">
-          <div class="modal-content">
-              <!-- Modal Header -->
-              <div class="modal-header">
-                  <h6 class="modal-title">Delete Product</h6>
-              </div>
-              <!-- Modal body -->
-              <div class="modal-body">
-                  <p>Do you really want to delete?</p>
-              </div>
-              <!-- Modal footer -->
-              <div class="modal-footer">
-                  <a type="button" id="delete_modal_product" data-id="" class="btn btn-lime btn-xs" >Yes</a>
-                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">No</button>
-              </div>
-          </div>
-      </div>
-  </div>
+
 {% endblock %}

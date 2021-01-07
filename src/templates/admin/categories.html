@@ -6,7 +6,7 @@
           <div class="section-title">
               <h5>Categories list</h5>
               <div class="button-outer">
-                  <a type="button" href="{{ url_for('admin_view.add_category') }}" class="btn btn-lime">Add Product</a>
+                  <a type="button" href="{{ url_for('admin_view.add_category') }}" class="btn btn-lime">Add Category</a>
               </div>
           </div>
           <input type="text" id="myInput" placeholder="Search for">
@@ -25,33 +25,31 @@
 
                         <td style="width:140px;">
                             <div class="button-outer" style="width:140px;">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{ category.id }}">Edit</button>
+                                <button type="button" id="update_category"  data-toggle="modal" data-id="1" data-target="#category_update{{ category.id }}" class="update btn btn-lime btn-xs">Edit</button>
                                 <button type="button" id="delete_category" data-toggle="modal" data-id="1" data-target="#category_delete{{ category.id }}" class="delete btn btn-lime btn-xs">Delete</button>
                             </div>
                         </td>
                     </tr>
 
-                    <div class="modal fade" id="exampleModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                        <div class="modal-body">
-                          <form method="POST" action="{{ url_for('admin_view.update_category') }}">
-                            <div class="form-group">
-                              <label>category name</label>
-                              <input type="hidden" name="id" value="{{ category.id }}">
-                              <input type="text" class="form-control" name="category_name" value="{{ category.name }}">
-                            </div>
-                            <button type="submit" class="btn btn-success">Update</button>
-                          </form>
-                        </div>
+                  <div class="modal fade" id="category_update{{ category.id }}">
+                      <div class="modal-dialog modal-sm update-modal">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h6 class="modal-title">Update Category</h6>
+                              </div>
+                              <form method="POST" action="{{ url_for('admin_view.update_category') }}">
+                              <div class="modal-body">
+                                <label>category name</label>
+                                <input type="hidden" name="id" value="{{ category.id }}">
+                                <input type="text" class="input" name="category_name" value="{{ category.name }}">
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="submit" class="btn btn-lime btn-xs">Update</button>
+                                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
+                              </div>
+                              </form>
+                          </div>
                       </div>
-                    </div>
                   </div>
 
                   <div class="modal fade" id="category_delete{{ category.id }}">

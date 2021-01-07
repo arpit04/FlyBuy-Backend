@@ -6,59 +6,50 @@
           <div class="section-title text-center">
               <h1>Add Product</h1>
           </div>
-          <form id="product_form" enctype="multipart/form-data">
+          <form method="POST" action="{{ url_for('admin_view.create_product') }}">
               <div class="row">
                   <div class="col-sm-6">
                       <div class="form-group">
                           <label>Name</label>
-                          <input name="name" id="name" value='' type="text" placeholder="Enter Name" class="form-control onFocus ui-autocomplete-input" autocomplete="off" data-placeholder="name">
-                          <p class="error" id="name_error"></p>
+                          <input type="text" name="name" class="form-control onFocus ui-autocomplete-input">
                       </div>
                   </div>
                   <div class="col-sm-6">
                       <div class="form-group">
-                          <label>Email</label>
-                          <input name="email" id="email" value='' type="email" placeholder="Enter Email" class="form-control onFocus ui-autocomplete-input" autocomplete="off" data-placeholder="email">
-                          <p class="error" id="email_error"></p>
+                          <label>Price</label>
+                          <input type="text" name="price" class="form-control onFocus ui-autocomplete-input">
                       </div>
                   </div>
                   <div class="col-sm-6">
                       <div class="form-group">
-                          <label>Password</label>
-                          <input name="password" id="password" value='' type="password" placeholder="Enter Password" class="form-control onFocus ui-autocomplete-input" autocomplete="off" data-placeholder="password">
-                          <p class="error" id="pass_error"></p>
+                          <label>Discount</label>
+                          <input type="text" name="discount" class="form-control onFocus ui-autocomplete-input">
                       </div>
                   </div>
                   <div class="col-sm-6">
                       <div class="form-group">
-                          <label>Role</label>
-                          <select id="role" name="role" class="custom-dropdown">
-                              <option value="customer" selected>Customer</option>
-                              <option value="seller">Seller</option>
-                              <option value="admin">Admin</option>
+                          <label>Category</label>
+                          <select id="role" name="category_id" class="custom-dropdown">
+                              {% for category in categories %}
+                              <option value="{{ category.id }}">{{ category.name }}</option>
+                              {% endfor %}
                           </select>
                       </div>
                   </div>
                   <div class="col-sm-6">
-                      <div class="form-group">
-                          <label>Active or Not</label>
-                          <ul class="radio-listing clearfix">
-                              <li>
-                                  <input type="radio" id="active" value="1"checked name="radio">
-                                  <label for="active">Active</label>
-                              </li>
-                              <li>
-                                  <input type="radio" id="not_active" value="0" name="radio">
-                                  <label for="not_active">Not Active</label>
-                              </li>
-                          </ul>
+                      <div>
+                        <ul>
+                          <li>
+                            <input type="checkbox" name="is_available" id="checkbox1" value="true" checked>
+                            <label for="active">___Available</label>
+                          </li>
+                        </ul>
                       </div>
                   </div>
                   <div class="col-sm-12">
                       <div class="form-group">
                           <div class="button-outer text-center">
-                              <button type="submit" id="product_insert" class="btn btn-lime btn-large">Submit</button>
-                              <a href="products.html" id="cancle" class="btn btn-lime btn-large">Cancel</a>
+                              <button type="submit" class="btn btn-lime btn-large">Submit</button>
                           </div>
                       </div>
                   </div>

@@ -115,17 +115,69 @@ def delete_category(category_id):
     db_session.commit()
 
     return redirect(url_for("admin_view.categories"))
+
 """ Product View """
 
 @admin_view.route("/products")
 def products():
-    pass
-    return render_template("admin/products.html")
+    products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
+    categories = db_session.query(models.Category).all()
+    return render_template("admin/products.html", products=products, categories=categories)
 
 @admin_view.route("/add_product")
 def add_product():
-    pass
-    return render_template("admin/add-product.html")
+    categories = db_session.query(models.Category).all()
+    return render_template("admin/add-product.html", categories=categories)
+
+@admin_view.route("/update_product", methods=["POST"])
+def update_product():
+    id = request.form["id"]
+    name = request.form["name"]
+    category_id = request.form["category_id"]
+    price = request.form["price"]
+    discount = request.form["discount"]
+
+    product = db_session.query(models.Product).filter(models.Product.id == int(id)).one_or_none()
+    if product:
+        product.name = name
+        product.category_id = int(category_id)
+        product.price = price
+        product.discount = discount
+
+        db_session.commit()
+    return redirect(url_for("admin_view.products"))
+
+@admin_view.route("/delete_product/<product_id>")
+def delete_product(product_id):
+    product = db_session.query(models.Product).filter(models.Product.id == int(product_id)).one_or_none()
+    db_session.delete(product)
+    db_session.commit()
+
+    return redirect(url_for("admin_view.products"))
+
+@admin_view.route("/create_product", methods=["POST"])
+def create_product():
+    try:
+        name = request.form["name"]
+        category_id = request.form["category_id"]
+        price = request.form["price"]
+        discount = request.form["discount"]
+        is_available = request.form["is_available"]
+
+        if is_available == "true":
+            is_available = True
+        else:
+            is_available = False
+
+        create_product = models.Product(category_id=int(category_id), name=name, price=price, discount=discount, is_available=is_available)
+        db_session.add(create_product)
+        db_session.flush()
+        db_session.commit()
+    except Exception as e:
+        print(e)
+        print("failed to create_product")
+        return redirect(url_for("admin_view.add_product"))
+    return redirect(url_for("admin_view.products"))
 
 """ Users View """
 
