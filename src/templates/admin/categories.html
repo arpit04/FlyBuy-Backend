@@ -6,7 +6,7 @@
           <div class="section-title">
               <h5>Categories list</h5>
               <div class="button-outer">
-                  <button type="button" id="add_category" data-toggle="modal" data-id="1" data-target="#category_add" class="delete btn btn-lime btn-xs">Add Category</button>
+                  <a type="button" href="{{ url_for('admin_view.add_category') }}" class="btn btn-lime">Add Product</a>
               </div>
           </div>
           <input type="text" id="myInput" placeholder="Search for">
@@ -18,36 +18,60 @@
                       <th></th>
                   </tr>
                   <tbody id="list">
-                  <tr>
-                      <td>1</td>
-                      <td>Clothings</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_category" data-toggle="modal" data-id="1" data-target="#category_delete" class="delete btn btn-lime btn-xs">Delete</button>
+                  {% for category in categories %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ category.name }}</td>
+
+                        <td style="width:140px;">
+                            <div class="button-outer" style="width:140px;">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{ category.id }}">Edit</button>
+                                <button type="button" id="delete_category" data-toggle="modal" data-id="1" data-target="#category_delete{{ category.id }}" class="delete btn btn-lime btn-xs">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <div class="modal fade" id="exampleModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form method="POST" action="{{ url_for('admin_view.update_category') }}">
+                            <div class="form-group">
+                              <label>category name</label>
+                              <input type="hidden" name="id" value="{{ category.id }}">
+                              <input type="text" class="form-control" name="category_name" value="{{ category.name }}">
+                            </div>
+                            <button type="submit" class="btn btn-success">Update</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal fade" id="category_delete{{ category.id }}">
+                      <div class="modal-dialog modal-sm delete-modal">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h6 class="modal-title">Delete Category</h6>
+                              </div>
+                              <div class="modal-body">
+                                  <p>Do you really want to delete?</p>
+                              </div>
+                              <div class="modal-footer">
+                                  <a type="button"  href="{{ url_for('admin_view.delete_category', category_id=category.id) }}" class="btn btn-lime btn-xs" >Yes</a>
+                                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">No</button>
+                              </div>
                           </div>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>2</td>
-                      <td>Footwear</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_category" data-toggle="modal" data-id="1" data-target="#category_delete" class="delete btn btn-lime btn-xs">Delete</button>
-                          </div>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>3</td>
-                      <td>Electronics</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_category" data-toggle="modal" data-id="1" data-target="#category_delete" class="delete btn btn-lime btn-xs">Delete</button>
-                          </div>
-                      </td>
-                  </tr>
+                      </div>
+                  </div>
+
+                  {% endfor %}
                   </tbody>
               </table>
           </div>
@@ -84,22 +108,7 @@
       </div>
   </div>
 
-  <div class="modal fade" id="category_delete">
-      <div class="modal-dialog modal-sm delete-modal">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h6 class="modal-title">Delete Category</h6>
-              </div>
-              <div class="modal-body">
-                  <p>Do you really want to delete?</p>
-              </div>
-              <div class="modal-footer">
-                  <a type="button" id="delete_modal_category" data-id="" class="btn btn-lime btn-xs" >Yes</a>
-                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">No</button>
-              </div>
-          </div>
-      </div>
-  </div>
+
 
   <div class="modal fade" id="category_add">
       <div class="modal-dialog modal-sm delete-modal">

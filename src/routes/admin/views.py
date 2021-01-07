@@ -67,42 +67,74 @@ def admin_signup():
         return redirect(url_for("admin_view.admin"))
     return redirect(url_for("admin_view.admin"))
 
-@admin_view.route("/add_category", methods=["POST"])
-def add_category():
-    category_name = request.form["category_name"]
-    print("----------------")
-    print("----------------")
-    print(category_name)
-    print("----------------")
-    print("----------------")
-    return render_template("admin/add-category.html")
-
-@admin_view.route("/add_product")
-def add_product():
-    pass
-    return render_template("admin/add-product.html")
-
-@admin_view.route("/add_user")
-def add_user():
-    pass
-    return render_template("admin/add-user.html")
-
-@admin_view.route("/categories")
-def categories():
-    pass
-    return render_template("admin/categories.html")
-
 @admin_view.route("/admin_dashboard/")
 def admin_dashboard():
     pass
     return render_template("admin/index.html")
+
+""" Categories View """
+
+@admin_view.route("/categories")
+def categories():
+    categories = db_session.query(models.Category).all()
+    return render_template("admin/categories.html", categories=categories)
+
+@admin_view.route("/add_category")
+def add_category():
+    return render_template("admin/add-category.html")
+
+@admin_view.route("/create_category", methods=["POST"])
+def create_category():
+    try:
+        name = request.form["name"]
+
+        create_category = models.Category(name=name)
+        db_session.add(create_category)
+        db_session.flush()
+        db_session.commit()
+    except Exception as e:
+        print(e)
+        print("failed to create_category")
+        return redirect(url_for("admin_view.add_category"))
+    return redirect(url_for("admin_view.categories"))
+
+@admin_view.route("/update_category", methods=["POST"])
+def update_category():
+    id = request.form["id"]
+    category_name = request.form["category_name"]
+    category = db_session.query(models.Category).filter(models.Category.id == int(id)).one_or_none()
+    if category:
+        category.name = category_name
+        db_session.commit()
+    return redirect(url_for("admin_view.categories"))
+
+@admin_view.route("/delete_category/<category_id>")
+def delete_category(category_id):
+    category = db_session.query(models.Category).filter(models.Category.id == int(category_id)).one_or_none()
+    db_session.delete(category)
+    db_session.commit()
+
+    return redirect(url_for("admin_view.categories"))
+""" Product View """
 
 @admin_view.route("/products")
 def products():
     pass
     return render_template("admin/products.html")
 
+@admin_view.route("/add_product")
+def add_product():
+    pass
+    return render_template("admin/add-product.html")
+
+""" Users View """
+
 @admin_view.route("/users")
 def users():
     pass
     return render_template("admin/users.html")
+
+@admin_view.route("/add_user")
+def add_user():
+    pass
+    return render_template("admin/add-user.html")

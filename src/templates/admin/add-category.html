@@ -6,7 +6,7 @@
           <div class="section-title text-center">
               <h1>Add Category</h1>
           </div>
-          <form id="category_form" enctype="multipart/form-data">
+          <form method="POST" action="{{ url_for('admin_view.create_category') }}">
               <div class="row">
                   <div class="col-sm-12">
                       <div class="form-group">
