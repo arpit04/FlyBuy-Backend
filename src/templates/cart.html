@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="container single-product-content bg-color-white pt-15px pb-20px">
+      <div class="row">
+          <div class="col-lg-12">
+              <ul class="product-images-gallery">
+                {% for cart in cart_list %}
+                  <li class="cart-list-item">
+                      <div class="d-flex item-detail">
+                          <img src="{{ url_for('static', filename='assets/images/products/') }}{{ cart[1].name }}" alt="Product image" width="150" height="150">
+                          <div class="single-product-des pt-0">
+                              <h5 class="product-title pb-0">{{ cart[1].name }}</h5>
+                              <div class="quantity d-flex m-0" style="align-items: center;">
+                                  <input type="number" step="1" min="1" name="quantity" value="1" title="Qty" class="input-text qty text total-quantity" size="2">
+                                  <div class="ml-15px mb-0 single-product-price">{{ cart[1].price }}</div>
+                              </div>
+                          </div>
+                          <button class="btn btn-fill" href="{{ url_for('view.cart_remove', cart_id=cart[0].id) }}">Remove</button>
+                      </div>
+                      <div class="separator-line"></div>
+                  </li>
+                {% endfor %}
+              </ul>
+          </div>
+          <div class="col-lg-12 text-right">
+              <button class="btn btn-fill">Checkout</button>
+          </div>
+      </div>
+  </div>
+{% endblock %}

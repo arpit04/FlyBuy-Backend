@@ -5,27 +5,33 @@
       <div class="container admin-wrapper bg-color-white p-30px">
           <div class="section-title">
               <h5>Products list</h5>
-              <div class="button-outer">
-                  <a type="button" href="{{ url_for('admin_view.add_product') }}" class="btn btn-lime">Add Product</a>
-              </div>
+              <button type="button" data-toggle="modal" data-target="#product_add" class="add btn btn-lime btn-xs">Add Product</button>
           </div>
           <input type="text" id="myInput" placeholder="Search for">
           <div class="table-responsive">
               <table class="table admin-table table-bordered table-striped">
                   <tr>
                       <th>Sr. no.</th>
+                      <th>Images</th>
                       <th>Title</th>
                       <th>Price</th>
                       <th>Cateogry</th>
+                      <th>Discount</th>
                       <th></th>
                   </tr>
                   <tbody id="list">
                   {% for product in products %}
                   <tr>
                       <td>{{ loop.index }}</td>
+                      <td>
+                        <a href="{{ url_for('admin_view.product_images', product_id=product[0].id) }}">
+                          <i class="fa fa-picture-o" aria-hidden="true"></i>
+                        </a>
+                      </td>
                       <td>{{ product[0].name }}</td>
                       <td>{{ product[0].price }}</td>
                       <td>{{ product[1].name }}</td>
+                      <td>{{ product[0].discount }}</td>
                       <td style="width:140px;">
                           <div class="button-outer" style="width:140px;">
                               <button type="button" id="update_product" data-toggle="modal" data-id="1" data-target="#product_update{{ product[0].id }}" class="update btn btn-lime btn-xs">Edit</button>
@@ -126,6 +132,41 @@
                   </li>
               </ul>
           </nav>
+      </div>
+  </div>
+
+  <div class="modal fade" id="product_add">
+      <div class="modal-dialog modal-sm add-modal">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h6 class="modal-title">Add Product</h6>
+              </div>
+              <form method="POST" action="{{ url_for('admin_view.create_product') }}">
+              <div class="modal-body">
+                <label>product name</label>
+                <input type="hidden" name="is_available" value="true">
+                <input type="text" class="input" name="name">
+                <br>
+                <label>product price</label>
+                <input type="text" class="input" name="price">
+                <br>
+                <label>product discount</label>
+                <input type="text" class="input" name="discount">
+                <br>
+                <label>Category</label>
+                <select name="category_id" class="custom-dropdown">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-lime btn-xs">Add Product</button>
+                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
+              </div>
+              </form>
+          </div>
       </div>
   </div>
 

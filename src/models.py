@@ -44,6 +44,7 @@ class Product(Base):
     price = sqlalchemy.Column(sqlalchemy.String(60), nullable=True)
     discount = sqlalchemy.Column(sqlalchemy.String(60), nullable=True)
     is_available = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    seller_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id, ondelete='CASCADE'))
 
 
 class ProductImages(Base):
@@ -70,7 +71,7 @@ class Cart(Base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id, ondelete='CASCADE'))
     product_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(Product.id, ondelete='CASCADE'))
-
+    
 
 class ValidationToken(Base):
     """ Database table for validation tokens """

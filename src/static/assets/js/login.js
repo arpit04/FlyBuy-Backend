@@ -116,7 +116,7 @@
             data: form.serialize(),
             success: function(data) {
                 console.log(data);
-                window.location.href = "dashboard";
+                window.location.href = "products";
                 // here is process after ajax success
             },
             error : function(data) {

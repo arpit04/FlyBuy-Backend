@@ -14,7 +14,7 @@
                           <a href="shop-right-sidebar.html">Shop </a>
                       </span>
                       <span class="separator">/</span>
-                      <span class="last-item">Product Name</span>
+                      <span class="last-item">{{ product.name }}</span>
                   </div>
               </div>
           </div>
@@ -24,7 +24,7 @@
       <div class="row mb-60px">
           <div class="col-md-6">
               <div class="single-product-images popup_gallery">
-                  <img src="{{ url_for('static', filename='assets/images/products/1.jpg') }}" alt="Product Image" width="800" height="893">
+                  <img src="{{ url_for('static', filename='assets/images/products/') }}{{ product.name }}" alt="Product Image" width="800" height="893">
                   <ul class="product-images-gallery">
                       <li>
                           <img src="{{ url_for('static', filename='assets/images/products/20.jpg') }}" alt="Product image" width="800" height="893">
@@ -43,8 +43,8 @@
           </div>
           <div class="col-md-6">
               <div class="single-product-des">
-                  <h2 class="product-title">Product Name</h2>
-                  <div class="single-product-price">$9.85</div>
+                  <h2 class="product-title">{{ product.name }}</h2>
+                  <div class="single-product-price">{{ product.price }}</div>
                   <div class="single-product-rating">
                       <span class="rating mr-2">
                           <span class="fas fa-star"></span>

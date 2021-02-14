@@ -5,9 +5,7 @@
       <div class="container admin-wrapper bg-color-white p-30px">
           <div class="section-title">
               <h5>Categories list</h5>
-              <div class="button-outer">
-                  <a type="button" href="{{ url_for('admin_view.add_category') }}" class="btn btn-lime">Add Category</a>
-              </div>
+              <button type="button" data-toggle="modal" data-target="#category_add" class="add btn btn-lime btn-xs">Add Category</button>
           </div>
           <input type="text" id="myInput" placeholder="Search for">
           <div class="table-responsive">
@@ -109,16 +107,19 @@
 
 
   <div class="modal fade" id="category_add">
-      <div class="modal-dialog modal-sm delete-modal">
+      <div class="modal-dialog modal-sm add-modal">
           <div class="modal-content">
               <div class="modal-header">
                   <h6 class="modal-title">Add Category</h6>
               </div>
-              <form class="add_category" role="form">
+              <form method="POST" action="{{ url_for('admin_view.create_category') }}">
               <div class="modal-body">
-                  <input class="input" type="text" name="category_name" placeholder="category">
-                  <br><br>
-                  <button class="btn btn-lime btn-xs" type="submit" id='add_category'>Add</button>
+                  <label>category name</label>
+                  <input class="input" type="text" name="name">
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-lime btn-xs">Add Category</button>
+                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
               </div>
               </form>
           </div>

@@ -10,53 +10,57 @@ from argon2 import PasswordHasher
 import logging
 from sqlalchemy import desc
 from src.users import verification_mail
+import flask_jwt_extended
 
 ph = PasswordHasher(hash_len=64, salt_len=32)
 
 view = Blueprint("view", __name__)
 
-@view.route("/dashboard")
-def dashboard():
-    is_login=session.get("logged_in")
-    products = [
-        {'image':'1.jpg','name':'a','price':'69.00'},
-        {'image':'2.jpg','name':'b','price':'79.00'},
-        {'image':'3.jpg','name':'c','price':'89.00'},
-        {'image':'4.jpg','name':'d','price':'99.00'},
-        {'image':'5.jpg','name':'e','price':'109.00'},
-        {'image':'6.jpg','name':'f','price':'119.00'},
-        {'image':'12.jpg','name':'g','price':'129.00'},
-        {'image':'13.jpg','name':'h','price':'139.00'},
-    ]
-    categories = ["Clothings","Footwears","Electronics","Travel","Toys","Home Living"]
-    return render_template("dashboard.html", is_login=is_login,products=products,categories=categories)
+@view.route("/cart/<product_id>")
+@flask_jwt_extended.jwt_required
+def cart(product_id):
+    user_id = flask_jwt_extended.get_jwt_identity()
+    try:
+        if product_id != "0":
+            add_to_cart = models.Cart(user_id=user_id, product_id=product_id)
+            db_session.add(add_to_cart)
+            db_session.flush()
+            db_session.commit()
+    except Exception as e:
+        print(e)
+        print("failed to create_category")
 
-@view.route("/product")
-def product():
-    pass
-    return render_template("shop-single-product.html")
+    cart_list = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).all()
+    print("cart_list -> ", len(cart_list))
+    return render_template("cart.html", cart_list=cart_list)
 
-@view.route("/home2")
-def home2():
+@view.route("/cart_remove/<cart_id>")
+@flask_jwt_extended.jwt_required
+def cart_remove(cart_id):
+    cart_item = db_session.query(models.Cart).filter(models.Cart.id == int(cart_id)).one_or_none()
+    db_session.delete(cart_item)
+    db_session.commit()
+
+    return redirect(url_for("view.cart", product_id="0"))
+
+@view.route("/product/<id>")
+@flask_jwt_extended.jwt_required
+def product(id):
+    print(id)
+    product = db_session.query(models.Product).filter(models.Product.id == id).one_or_none()
+
+    return render_template("shop-single-product.html", product=product)
+
+@view.route("/products")
+@flask_jwt_extended.jwt_required
+def products():
     is_login=session.get("logged_in")
-    products = [
-        {'image':'1.jpg','name':'a','price':'69.00'},
-        {'image':'2.jpg','name':'b','price':'79.00'},
-        {'image':'3.jpg','name':'c','price':'89.00'},
-        {'image':'4.jpg','name':'d','price':'99.00'},
-        {'image':'5.jpg','name':'e','price':'109.00'},
-        {'image':'6.jpg','name':'f','price':'119.00'},
-        {'image':'7.jpg','name':'g','price':'129.00'},
-        {'image':'8.jpg','name':'h','price':'139.00'},
-        {'image':'9.jpg','name':'i','price':'149.00'},
-        {'image':'10.jpg','name':'j','price':'159.00'},
-        {'image':'11.jpg','name':'k','price':'169.00'},
-        {'image':'12.jpg','name':'l','price':'179.00'},
-    ]
-    categories = ["Bags","Boot","Clothing","Exclusive","Sandals","Shoes","Sunglasses","Trending","Women"]
+    products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
+    categories = db_session.query(models.Category).all()
     return render_template("shop-right-sidebar.html", is_login=is_login,products=products,categories=categories)
 
 @view.route("/forgot_pass")
+@flask_jwt_extended.jwt_required
 def forgot_pass():
     pass
     return render_template("forget-password.html")
@@ -76,20 +80,21 @@ def reset_pass(the_token):
 @view.route("/")
 def user():
     if session.get("logged_in"):
-        return redirect(url_for("view.dashboard"))
+        return redirect(url_for("view.products"))
     return render_template("index.html")
 
 
 @view.route("/user_logout/")
 def user_logout():
-    session["logged_in"] = False
-    return redirect(url_for("view.user"))
+    resp = redirect(url_for("view.user"))
+    flask_jwt_extended.unset_access_cookies(resp)
+    return resp
 
 
 @view.route("/search/", methods=["POST"])
 def search():
     print(request.form["search"])
-    return redirect(url_for("view.home2"))
+    return redirect(url_for("view.products"))
 
 @view.route("/user_login/", methods=["POST"])
 def user_login():
@@ -102,8 +107,9 @@ def user_login():
         return "no user found", 400
     try:
         if ph.verify(user.password_hash, password) and user.email_validated:
-            session["logged_in"] = True
+            access_token = flask_jwt_extended.create_access_token(identity=user.id)
             resp = jsonify(success=True)
+            flask_jwt_extended.set_access_cookies(resp, access_token)
             return resp
     except Exception as e:
         print(e)
@@ -123,7 +129,7 @@ def validate_user(the_token):
 @view.route("/register/")
 def register():
     if session.get("logged_in"):
-        return redirect(url_for("view.dashboard"))
+        return redirect(url_for("view.products"))
     user_types = db_session.query(models.UserType).all()
     return render_template("register.html",user_types=user_types)
 
@@ -181,7 +187,7 @@ def reset_password():
     try:
         db_session.commit()
         session["logged_in"] = True
-        return redirect(url_for("view.dashboard"))
+        return redirect(url_for("view.products"))
     except Exception as e:
         print(e)
         db_session.rollback()

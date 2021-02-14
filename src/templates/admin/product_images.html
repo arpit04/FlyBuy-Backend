@@ -1,0 +1,26 @@
+{% extends "admin/dashboard_layout.html" %}
+
+{% block content %}
+
+  <div class="page-container container scene-main scene-main--fade_In">
+    <div class="container admin-wrapper bg-color-white p-30px">
+      {% for image in images %}
+        <h2>{{image.image_url}}</h2>
+        <img src="{{ url_for('static', filename='assets/images/products/') }}{{image.image_url}}" alt="Cinque Terre" width="300" height="300">
+        <br>
+      {% endfor %}
+
+      <form method="POST" action="{{ url_for('admin_view.upload_images') }}" enctype="multipart/form-data">
+        <input type="hidden" name="product_id" value="{{ product_id }}">
+
+        <img id="blah" alt="your image" width="100" height="100" />
+        <input type="file" onchange="document.getElementById('blah').src = window.URL.createObjectURL(this.files[0])" name="image">
+
+
+        <button type="submit" class="btn btn-lime btn-xs">Add</button>
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

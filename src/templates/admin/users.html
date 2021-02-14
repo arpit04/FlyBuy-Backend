@@ -5,69 +5,85 @@
       <div class="container admin-wrapper bg-color-white p-30px">
           <div class="section-title">
               <h5>Users list</h5>
-              <div class="button-outer">
-                  <a type="button" href="add-user.html" class="btn btn-lime">Add User</a>
-              </div>
+              <button type="button" data-toggle="modal" data-target="#user_add" class="add btn btn-lime btn-xs">Add User</button>
           </div>
           <input type="text" id="myInput" placeholder="Search for">
           <div class="table-responsive">
               <table class="table admin-table table-bordered table-striped">
                   <tr>
                       <th>Sr. no.</th>
+                      <th>Name/th>
                       <th>Email</th>
                       <th>Role</th>
                       <th>Status</th>
                       <th></th>
                   </tr>
                   <tbody id="list">
+                  {% for user in users %}
                   <tr>
-                      <td>1</td>
-                      <td>kishanpanchal@gmail.com</td>
-                      <td>Admin</td>
+                      <td>{{ loop.index }}</td>
+                      <td>{{ user.name }}</td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ user.user_type_id }}</td>
                       <td>Active</td>
                       <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <!-- <button type="button" id="delete_user" data-toggle="modal" data-id="1" data-target="#user_delete" class="delete btn btn-lime btn-xs">Delete</button> -->
-                          </div>
+                        <div class="button-outer" style="width:140px;">
+                            <button type="button" id="update_user" data-toggle="modal" data-target="#user_update{{ user.id }}" class="update btn btn-lime btn-xs">Edit</button>
+                            <button type="button" id="delete_user" data-toggle="modal" data-target="#user_delete{{ user.id }}" class="delete btn btn-lime btn-xs">Delete</button>
+                        </div>
                       </td>
                   </tr>
-                  <tr>
-                      <td>2</td>
-                      <td>arpitravl@gmail.com</td>
-                      <td>Admin</td>
-                      <td>Active</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_user" data-toggle="modal" data-id="1" data-target="#user_delete" class="delete btn btn-lime btn-xs">Delete</button>
+
+                  <div class="modal fade" id="user_update{{ user.id }}">
+                      <div class="modal-dialog modal-sm update-modal">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h6 class="modal-title">Update User</h6>
+                              </div>
+                              <form method="POST" action="{{ url_for('admin_view.update_user') }}">
+                              <div class="modal-body">
+                                <label>username</label>
+                                <input type="hidden" name="id" value="{{ user.id }}">
+                                <input type="text" class="input" name="name" value="{{ user.name }}">
+                                <br><br>
+                                <label>email</label>
+                                <input type="text" class="input" name="email" value="{{ user.email }}">
+                                <br><br>
+                                <label>usertype</label>
+                                <select name="user_type_id" class="custom-dropdown">
+                                    {% for user_type in user_types %}
+                                        <option value="{{ user_type.id }}">{{ user_type.type }}</option>
+                                    {% endfor %}
+                                </select>
+
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="submit" class="btn btn-lime btn-xs">Update</button>
+                                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
+                              </div>
+                              </form>
                           </div>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>3</td>
-                      <td>vishalpatel@gmail.com</td>
-                      <td>User</td>
-                      <td>Active</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_user" data-toggle="modal" data-id="1" data-target="#user_delete" class="delete btn btn-lime btn-xs">Delete</button>
+                      </div>
+                  </div>
+
+                  <div class="modal fade" id="user_delete{{ user.id }}">
+                      <div class="modal-dialog modal-sm delete-modal">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h6 class="modal-title">Delete User</h6>
+                              </div>
+                              <div class="modal-body">
+                                  <p>Do you really want to delete?</p>
+                              </div>
+                              <div class="modal-footer">
+                                  <a type="button" href="{{ url_for('admin_view.delete_user', user_id=user.id) }}" class="btn btn-lime btn-xs" >Yes</a>
+                                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">No</button>
+                              </div>
                           </div>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>4</td>
-                      <td>panchalKishan12@gmail.com</td>
-                      <td>Seller</td>
-                      <td>Active</td>
-                      <td style="width:140px;">
-                          <div class="button-outer" style="width:140px;">
-                              <a type="button" href="#" class="btn btn-lime btn-xs">Edit</a>
-                              <button type="button" id="delete_user" data-toggle="modal" data-id="1" data-target="#user_delete" class="delete btn btn-lime btn-xs">Delete</button>
-                          </div>
-                      </td>
-                  </tr>
+                      </div>
+                  </div>
+
+                  {% endfor %}
                   </tbody>
               </table>
           </div>
@@ -103,24 +119,35 @@
           </nav>
       </div>
   </div>
-  <!-- Delete Modal Start -->
-  <div class="modal fade" id="user_delete">
-      <div class="modal-dialog modal-sm delete-modal">
+
+  <div class="modal fade" id="user_add">
+      <div class="modal-dialog modal-sm add-modal">
           <div class="modal-content">
-              <!-- Modal Header -->
               <div class="modal-header">
-                  <h6 class="modal-title">Delete User</h6>
+                  <h6 class="modal-title">Add User</h6>
               </div>
-              <!-- Modal body -->
+              <form method="POST" action="{{ url_for('admin_view.create_user') }}">
               <div class="modal-body">
-                  <p>Do you really want to delete?</p>
+                <label>username</label><br>
+                <input type="text" class="input" name="name"><br>
+                <label>email</label><br>
+                <input type="text" class="input" name="email"><br>
+                <label>password</label><br>
+                <input type="text" class="input" name="password"><br>
+                <label>usertype</label><br>
+                <select name="user_type_id" class="custom-dropdown">
+                    {% for user_type in user_types %}
+                        <option value="{{ user_type.id }}">{{ user_type.type }}</option>
+                    {% endfor %}
+                </select>
               </div>
-              <!-- Modal footer -->
               <div class="modal-footer">
-                  <a type="button" id="delete_modal_user" data-id="" class="btn btn-lime btn-xs" >Yes</a>
-                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">No</button>
+                  <button type="submit" class="btn btn-lime btn-xs">Add User</button>
+                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
               </div>
+              </form>
           </div>
       </div>
   </div>
+
 {% endblock %}
