@@ -16,7 +16,7 @@
                                   <div class="ml-15px mb-0 single-product-price">{{ cart[1].price }}</div>
                               </div>
                           </div>
-                          <button class="btn btn-fill" href="{{ url_for('view.cart_remove', cart_id=cart[0].id) }}">Remove</button>
+                          <button class="btn btn-fill" onclick="window.location.href='{{ url_for('view.cart_remove', cart_id=cart[0].id) }}';">Remove</button>
                       </div>
                       <div class="separator-line"></div>
                   </li>
@@ -24,7 +24,7 @@
               </ul>
           </div>
           <div class="col-lg-12 text-right">
-              <button class="btn btn-fill">Checkout</button>
+              <button class="btn btn-fill" onclick="window.location.href='{{ url_for('view.checkout') }}';">Checkout</button>
           </div>
       </div>
   </div>

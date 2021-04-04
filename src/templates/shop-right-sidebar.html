@@ -43,7 +43,7 @@
                           <a href="{{ url_for('view.product', id=product[0].id) }}">
                               <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/') }}{{ product[0].name }}" alt="Product image">
                           </a>
-                          <a rel="nofollow" href="{{ url_for('view.cart', product_id=product[0].id) }}" class="btn btn-dark rounded-0 btn-add-to-cart">Add
+                          <a rel="nofollow" href="{{ url_for('view.add_to_cart', product_id=product[0].id) }}" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                               to cart</a>
                       </div>
                       <div class="product-white-wrapper align-items-center">

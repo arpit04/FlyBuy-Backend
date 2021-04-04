@@ -24,7 +24,17 @@
                       <td>{{ loop.index }}</td>
                       <td>{{ user.name }}</td>
                       <td>{{ user.email }}</td>
-                      <td>{{ user.user_type_id }}</td>
+
+                      {% if user.user_type_id == 1 %}
+                        <td>buyer</td>
+                      {% elif user.user_type_id == 2 %}
+                        <td>seller</td>
+                      {% elif user.user_type_id == 3 %}
+                        <td>admin</td>
+                      {% else %}
+                        <td>-</td>
+                      {% endif %}
+
                       <td>Active</td>
                       <td style="width:140px;">
                         <div class="button-outer" style="width:140px;">

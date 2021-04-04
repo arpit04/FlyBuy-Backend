@@ -33,6 +33,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = database.uri_string
     app.config["ERROR_404_HELP"] = False
     app.config['JWT_TOKEN_LOCATION']= 'cookies'
+    app.config['JWT_COOKIE_CSRF_PROTECT']= False
     app.debug = True
     JWTManager(app)
 

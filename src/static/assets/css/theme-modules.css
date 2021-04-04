@@ -4765,7 +4765,7 @@ input {
   font-weight: normal;
 }
 
-.form-control {
+.form-control{
   font-family: 'Roboto', sans-serif;
   border: 0;
   border-radius: 0;
@@ -4776,6 +4776,10 @@ input {
   border: 1px solid #AAAAAA;
   border-radius: 2px;
   height: 50px;
+}
+
+textarea.form-control{
+  height: auto;
 }
 .input-subscribe {
   border-radius: 50px;

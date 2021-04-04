@@ -19,19 +19,22 @@ admin_view = Blueprint("admin_view", __name__)
 @admin_view.route("/admin_dashboard/")
 @flask_jwt_extended.jwt_required
 def admin_dashboard():
-    # if not session.get("logged_in"):
-    #     return render_template("index.html")
-    return render_template("admin/index.html")
+    id = flask_jwt_extended.get_jwt_identity()
+    user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
+    return render_template("admin/index.html", user_type=user_type.user_type_id)
 
 """ Categories View """
 
 @admin_view.route("/categories")
 @flask_jwt_extended.jwt_required
 def categories():
-    # if not session.get("logged_in"):
-    #     return render_template("index.html")
+    id = flask_jwt_extended.get_jwt_identity()
+    user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
+
     categories = db_session.query(models.Category).all()
-    return render_template("admin/categories.html", categories=categories)
+    
+    
+    return render_template("admin/categories.html", categories=categories, user_type=user_type.user_type_id)
 
 @admin_view.route("/create_category", methods=["POST"])
 @flask_jwt_extended.jwt_required
@@ -72,11 +75,16 @@ def delete_category(category_id):
 @admin_view.route("/admin/products")
 @flask_jwt_extended.jwt_required
 def products():
-    # if not session.get("logged_in"):
-    #     return render_template("index.html")
-    products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
+    id = flask_jwt_extended.get_jwt_identity()
+    user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
+
+    if user_type.user_type_id == 3:
+        products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
+    else:
+        products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id, models.Product.seller_id == int(id)).all()
+    
     categories = db_session.query(models.Category).all()
-    return render_template("admin/products.html", products=products, categories=categories)
+    return render_template("admin/products.html", products=products, categories=categories, user_type=user_type.user_type_id)
 
 @admin_view.route("/create_product", methods=["POST"])
 @flask_jwt_extended.jwt_required
@@ -161,11 +169,12 @@ def upload_images():
 @admin_view.route("/users")
 @flask_jwt_extended.jwt_required
 def users():
-    # if not session.get("logged_in"):
-    #     return render_template("index.html")
+    id = flask_jwt_extended.get_jwt_identity()
+    user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
+    
     users = db_session.query(models.User).all()
     user_types = db_session.query(models.UserType).all()
-    return render_template("admin/users.html", users=users, user_types=user_types)
+    return render_template("admin/users.html", users=users, user_type=user_type.user_type_id)
 
 @admin_view.route("/create_user", methods=["POST"])
 @flask_jwt_extended.jwt_required

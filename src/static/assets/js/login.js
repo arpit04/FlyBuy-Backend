@@ -19,12 +19,12 @@
                 // submit login form
                 console.log("arit");
                 form = $('#login-form');
-                url = "/user_login/";
+                url = "/user_login";
             }
             if (type == 'register') {
                 // submit register form
                 form = $('#register-form');
-                url = "/registration/";
+                url = "/registration";
             }
             submitAjax(url, form);
         }

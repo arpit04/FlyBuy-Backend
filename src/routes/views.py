@@ -16,9 +16,30 @@ ph = PasswordHasher(hash_len=64, salt_len=32)
 
 view = Blueprint("view", __name__)
 
-@view.route("/cart/<product_id>")
+@view.route("/checkout")
 @flask_jwt_extended.jwt_required
-def cart(product_id):
+def checkout():
+    pass
+    return render_template("checkout.html")
+
+@view.route("/payment")
+@flask_jwt_extended.jwt_required
+def payment():
+    pass
+    return render_template("payment.html")
+
+
+@view.route("/cart")
+@flask_jwt_extended.jwt_required
+def cart():
+    user_id = flask_jwt_extended.get_jwt_identity()
+    cart_list = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).all()
+   
+    return render_template("cart.html", cart_list=cart_list, cart_count=len(cart_list))
+
+@view.route("/add_to_cart/<product_id>")
+@flask_jwt_extended.jwt_required
+def add_to_cart(product_id):
     user_id = flask_jwt_extended.get_jwt_identity()
     try:
         if product_id != "0":
@@ -28,36 +49,45 @@ def cart(product_id):
             db_session.commit()
     except Exception as e:
         print(e)
-        print("failed to create_category")
 
-    cart_list = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).all()
-    print("cart_list -> ", len(cart_list))
-    return render_template("cart.html", cart_list=cart_list)
+    return redirect(url_for("view.cart"))
 
-@view.route("/cart_remove/<cart_id>")
+
+@view.route("/cart_remove/<int:cart_id>")
 @flask_jwt_extended.jwt_required
 def cart_remove(cart_id):
-    cart_item = db_session.query(models.Cart).filter(models.Cart.id == int(cart_id)).one_or_none()
-    db_session.delete(cart_item)
-    db_session.commit()
+    try:
+        cart_item = db_session.query(models.Cart).filter(models.Cart.id == cart_id).one_or_none()
+        db_session.delete(cart_item)
+        db_session.commit()
+    except Exception as e:
+        print(e)
 
-    return redirect(url_for("view.cart", product_id="0"))
+    return redirect(url_for("view.cart"))
 
 @view.route("/product/<id>")
 @flask_jwt_extended.jwt_required
 def product(id):
-    print(id)
-    product = db_session.query(models.Product).filter(models.Product.id == id).one_or_none()
+    try:
+        product = db_session.query(models.Product).filter(models.Product.id == id).one_or_none()
+    except Exception as e:
+        print(e)
 
     return render_template("shop-single-product.html", product=product)
 
 @view.route("/products")
 @flask_jwt_extended.jwt_required
 def products():
-    is_login=session.get("logged_in")
-    products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
-    categories = db_session.query(models.Category).all()
-    return render_template("shop-right-sidebar.html", is_login=is_login,products=products,categories=categories)
+    try:
+        user_id = flask_jwt_extended.get_jwt_identity()
+        is_login = session.get("logged_in")
+        products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
+        categories = db_session.query(models.Category).all()
+        cart_count = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).count()
+    except Exception as e:
+        print(e)
+
+    return render_template("shop-right-sidebar.html", is_login=is_login,products=products,categories=categories, cart_count=cart_count)
 
 @view.route("/forgot_pass")
 @flask_jwt_extended.jwt_required
@@ -67,12 +97,15 @@ def forgot_pass():
 
 @view.route("/reset_pass/<the_token>")
 def reset_pass(the_token):
-    res, id = verification_mail.update_password(the_token)
-    if res and id:
-        user = (
-            db_session.query(models.User).filter(models.User.id == id).one_or_none()
-        )
-        return render_template("reset-password.html", email=user.email)
+    try:
+        res, id = verification_mail.update_password(the_token)
+        if res and id:
+            user = (
+                db_session.query(models.User).filter(models.User.id == id).one_or_none()
+            )
+            return render_template("reset-password.html", email=user.email)
+    except Exception as e:
+        print(e)
 
     return render_template("forget-password.html")
 
@@ -84,19 +117,19 @@ def user():
     return render_template("index.html")
 
 
-@view.route("/user_logout/")
+@view.route("/user_logout")
 def user_logout():
     resp = redirect(url_for("view.user"))
     flask_jwt_extended.unset_access_cookies(resp)
     return resp
 
 
-@view.route("/search/", methods=["POST"])
+@view.route("/search", methods=["POST"])
 def search():
     print(request.form["search"])
     return redirect(url_for("view.products"))
 
-@view.route("/user_login/", methods=["POST"])
+@view.route("/user_login", methods=["POST"])
 def user_login():
     email = request.form["email"]
     password = request.form["password"]
@@ -126,7 +159,7 @@ def validate_user(the_token):
     message = "Thanks for registration <br><span> Now you can access your account</span>"
     return render_template("user_verification.html", message=message)
 
-@view.route("/register/")
+@view.route("/register")
 def register():
     if session.get("logged_in"):
         return redirect(url_for("view.products"))
@@ -134,7 +167,7 @@ def register():
     return render_template("register.html",user_types=user_types)
 
 
-@view.route("/registration/", methods=["GET", "POST"])
+@view.route("/registration", methods=["GET", "POST"])
 def registration():
     try:
         name = request.form["name"]
@@ -170,7 +203,7 @@ def registration():
         db_session.rollback()
         return redirect(url_for("view.register"))
 
-@view.route("/reset_password/", methods=["GET", "POST"])
+@view.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
     try:
         email = request.form["email"]
@@ -193,7 +226,7 @@ def reset_password():
         db_session.rollback()
         return redirect(url_for("view.user"))
 
-@view.route("/forgot_password/", methods=["GET", "POST"])
+@view.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     try:
         email = request.form["email"]
