@@ -26,13 +26,13 @@
           <div class="col-lg-9">
               <div class="shop-item-toolbar">
 
-                  <div class="items-ordering">
+                  <!-- <div class="items-ordering">
                       <select name="orderby" class="orderby">
                           <option value="menu_order" selected="selected">Default sorting</option>
                           <option value="price">Sort by price: low to high</option>
                           <option value="price-desc">Sort by price: high to low</option>
                       </select>
-                  </div>
+                  </div> -->
               </div>
           </div>
           <div class="col-lg-9">
@@ -41,7 +41,7 @@
                   <li class="product col-6 col-md-4 col-lg-4">
                       <div class="product-img-wrapper">
                           <a href="{{ url_for('view.product', id=product[0].id) }}">
-                              <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/') }}{{ product[0].name }}" alt="Product image">
+                              <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/') }}{{ product[1].image_url }}" alt="Product image">
                           </a>
                           <a rel="nofollow" href="{{ url_for('view.add_to_cart', product_id=product[0].id) }}" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                               to cart</a>
@@ -52,8 +52,9 @@
                           </h6>
                           <span class="price">
                               <span class="amount">
-                                  <span class="currencySymbol">$</span>{{ product[0].price }}</span>
+                                  <span class="currencySymbol">₹</span> {{ product[0].price }}</span>
                           </span>
+                    
                       </div>
                   </li>
                   {% endfor %}
@@ -86,7 +87,7 @@
                   <ul class="category-list list-unstyled">
                       {% for category in categories %}
                       <li>
-                          <a href="#">
+                          <a href="{{ url_for('view.products_by_category', category_id=category.id) }}">
                               {{ category.name }}
                           </a>
                       </li>

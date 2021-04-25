@@ -11,6 +11,7 @@ import logging
 from sqlalchemy import desc
 from src.users import verification_mail
 import flask_jwt_extended
+import json 
 
 ph = PasswordHasher(hash_len=64, salt_len=32)
 
@@ -22,20 +23,128 @@ def checkout():
     pass
     return render_template("checkout.html")
 
+@view.route("/checkout/address")
+@flask_jwt_extended.jwt_required
+def delivery_address():
+    user_id = flask_jwt_extended.get_jwt_identity()
+    address_count = db_session.query(models.UserAddress).filter(models.UserAddress.user_id == user_id).count()
+    return render_template("checkout.html", address_count=address_count + 1)
+
+@view.route("/edit_address/<address_id>")
+@flask_jwt_extended.jwt_required
+def edit_address(address_id):
+    address = db_session.query(models.UserAddress).filter(models.UserAddress.id == int(address_id)).one_or_none()
+    return render_template("edit_address.html", address=address)
+
+@view.route("/edit_delivery_address", methods=["GET", "POST"])
+@flask_jwt_extended.jwt_required
+def edit_delivery_address():
+    address_id = request.form["address_id"]
+    address = db_session.query(models.UserAddress).filter(models.UserAddress.id == int(address_id)).one_or_none()
+    address.first_name = request.form["first_name"]
+    address.last_name = request.form["last_name"]
+    address.email = request.form["email"]
+    address.phone_number = request.form["phone_number"]
+    address.address = request.form["address"]
+    address.country = request.form["country"]
+    address.state = request.form["state"]
+    address.city = request.form["city"]
+    address.postal_code = request.form["postal_code"]
+
+    try:
+        db_session.commit()
+    except Exception as e:
+        print(e)
+        db_session.rollback()
+        return redirect(url_for("view.checkout"))
+        
+    return redirect(url_for("view.cart"))
+
+@view.route("/add_address", methods=["GET", "POST"])
+@flask_jwt_extended.jwt_required
+def add_address():
+    try:
+        user_id = flask_jwt_extended.get_jwt_identity()
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
+        email = request.form["email"]
+        phone_number = request.form["phone_number"]
+        address = request.form["address"]
+        country = request.form["country"]
+        state = request.form["state"]
+        city = request.form["city"]
+        postal_code = request.form["postal_code"]
+        
+        add_address = models.UserAddress(
+            user_id=user_id,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone_number=phone_number,
+            address=address,
+            country=country,
+            state=state,
+            city=city,
+            postal_code=postal_code
+        )
+        db_session.add(add_address)
+        db_session.flush()
+    except Exception as e:
+        print(e)
+        return redirect(url_for("view.checkout"))
+
+    try:
+        db_session.commit()
+        address_id = add_address.id
+    except Exception as e:
+        print(e)
+        db_session.rollback()
+        return redirect(url_for("view.checkout"))
+        
+    return redirect(url_for("view.cart"))
+
 @view.route("/payment")
 @flask_jwt_extended.jwt_required
 def payment():
     pass
     return render_template("payment.html")
 
+@view.route("/buynow", methods=["GET", "POST"])
+@flask_jwt_extended.jwt_required
+def buynow():
+    print(request.form)
+    return redirect(url_for("view.products"))
 
 @view.route("/cart")
 @flask_jwt_extended.jwt_required
 def cart():
     user_id = flask_jwt_extended.get_jwt_identity()
-    cart_list = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).all()
-   
-    return render_template("cart.html", cart_list=cart_list, cart_count=len(cart_list))
+    cart_list = db_session.query(models.Cart, models.Product, models.ProductImages).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).filter(models.ProductImages.product_id == models.Cart.product_id, models.ProductImages.profile_img == True).all()
+    address = db_session.query(models.UserAddress).filter(models.UserAddress.user_id == user_id).all()
+    total = 0
+    for cart in cart_list:
+        total += int(cart[1].price)
+
+    print(total)
+    data =[]
+    for add in address:
+        data.append({
+        "address_id": add.id,
+        "address_name": add.address_name,
+        "first_name": add.first_name,
+        "last_name": add.last_name,
+        "email": add.email,
+        "phone_number": add.phone_number,
+        "address": add.address,
+        "country": add.country,
+        "state": add.state,
+        "city": add.city,
+        "postal_code": add.postal_code
+        })
+
+
+    data =  json.dumps(data)
+    return render_template("cart.html", cart_list=cart_list, cart_count=len(cart_list), total=total, address=address, data=data)
 
 @view.route("/add_to_cart/<product_id>")
 @flask_jwt_extended.jwt_required
@@ -69,11 +178,15 @@ def cart_remove(cart_id):
 @flask_jwt_extended.jwt_required
 def product(id):
     try:
+        user_id = flask_jwt_extended.get_jwt_identity()
         product = db_session.query(models.Product).filter(models.Product.id == id).one_or_none()
+        product_images = db_session.query(models.ProductImages).filter(models.ProductImages.product_id == id).all()
+        category_name = db_session.query(models.Category.name).filter(models.Category.id == product.category_id).one_or_none()
+        cart_count = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).count()
     except Exception as e:
         print(e)
 
-    return render_template("shop-single-product.html", product=product)
+    return render_template("shop-single-product.html", product=product, product_images=product_images, category_name=category_name[0], cart_count=cart_count)
 
 @view.route("/products")
 @flask_jwt_extended.jwt_required
@@ -81,13 +194,28 @@ def products():
     try:
         user_id = flask_jwt_extended.get_jwt_identity()
         is_login = session.get("logged_in")
-        products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
+        products = db_session.query(models.Product, models.ProductImages).filter(models.Product.id == models.ProductImages.product_id, models.ProductImages.profile_img == True).all()
         categories = db_session.query(models.Category).all()
         cart_count = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).count()
     except Exception as e:
         print(e)
 
     return render_template("shop-right-sidebar.html", is_login=is_login,products=products,categories=categories, cart_count=cart_count)
+
+@view.route("/products/<int:category_id>")
+@flask_jwt_extended.jwt_required
+def products_by_category(category_id):
+    try:
+        user_id = flask_jwt_extended.get_jwt_identity()
+        is_login = session.get("logged_in")
+        products = db_session.query(models.Product, models.ProductImages).filter(models.Product.id == models.ProductImages.product_id, models.Product.category_id == category_id, models.ProductImages.profile_img == True).all()
+        categories = db_session.query(models.Category).all()
+        cart_count = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).count()
+    except Exception as e:
+        print(e)
+
+    return render_template("shop-right-sidebar.html", is_login=is_login,products=products,categories=categories, cart_count=cart_count)
+
 
 @view.route("/forgot_pass")
 @flask_jwt_extended.jwt_required
@@ -121,6 +249,7 @@ def user():
 def user_logout():
     resp = redirect(url_for("view.user"))
     flask_jwt_extended.unset_access_cookies(resp)
+    session['logged_in'] = False
     return resp
 
 
@@ -143,6 +272,7 @@ def user_login():
             access_token = flask_jwt_extended.create_access_token(identity=user.id)
             resp = jsonify(success=True)
             flask_jwt_extended.set_access_cookies(resp, access_token)
+            session['logged_in'] = True
             return resp
     except Exception as e:
         print(e)

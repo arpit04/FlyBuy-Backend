@@ -5,7 +5,7 @@
       <div class="container admin-wrapper bg-color-white p-30px">
           <div class="section-title">
               <h5>Products list</h5>
-              <button type="button" data-toggle="modal" data-target="#product_add" class="add btn btn-lime btn-xs">Add Product</button>
+              <a href="{{ url_for('admin_view.add_product') }}"><button class="add btn btn-lime btn-xs">Add Product</button></a>
           </div>
           <input type="text" id="myInput" placeholder="Search for">
           <div class="table-responsive">
@@ -132,41 +132,6 @@
                   </li>
               </ul>
           </nav>
-      </div>
-  </div>
-
-  <div class="modal fade" id="product_add">
-      <div class="modal-dialog modal-sm add-modal">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h6 class="modal-title">Add Product</h6>
-              </div>
-              <form method="POST" action="{{ url_for('admin_view.create_product') }}">
-              <div class="modal-body">
-                <label>product name</label>
-                <input type="hidden" name="is_available" value="true">
-                <input type="text" class="input" name="name">
-                <br>
-                <label>product price</label>
-                <input type="text" class="input" name="price">
-                <br>
-                <label>product discount</label>
-                <input type="text" class="input" name="discount">
-                <br>
-                <label>Category</label>
-                <select name="category_id" class="custom-dropdown">
-                    {% for category in categories %}
-                        <option value="{{ category.id }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-
-              </div>
-              <div class="modal-footer">
-                  <button type="submit" class="btn btn-lime btn-xs">Add Product</button>
-                  <button type="submit" class="btn btn-lime btn-xs" data-dismiss="modal">Cancle</button>
-              </div>
-              </form>
-          </div>
       </div>
   </div>
 

@@ -24,19 +24,22 @@
       <div class="row mb-60px">
           <div class="col-md-6">
               <div class="single-product-images popup_gallery">
-                  <img src="{{ url_for('static', filename='assets/images/products/') }}{{ product.name }}" alt="Product Image" width="800" height="893">
+                  
+                  {% for product_image in product_images %}
+                    {% if product_image.profile_img == True %}
+                     <img src="{{ url_for('static', filename='assets/images/products/') }}{{ product_image.image_url }}" alt="Product Image" width="800" height="893">
+                    {% endif %}
+
+                  {% endfor %}
+
                   <ul class="product-images-gallery">
-                      <li>
-                          <img src="{{ url_for('static', filename='assets/images/products/20.jpg') }}" alt="Product image" width="800" height="893">
-                      </li>
-                      <li>
-                          <img src="{{ url_for('static', filename='assets/images/products/2.jpg') }}" alt="Product image" width="800" height="893">
-                      </li>
-                      <li>
-                          <img src="{{ url_for('static', filename='assets/images/products/4.jpg') }}" alt="Product image" width="800" height="893">
-                      </li>
-                      <li><img src="{{ url_for('static', filename='assets/images/products/21.jpg') }}" alt="Product image" width="800" height="893">
-                      </li>
+                      {% for product_image in product_images %}
+                        {% if product_image.profile_img == False %}
+                          <li>
+                            <img src="{{ url_for('static', filename='assets/images/products/') }}{{ product_image.image_url }}" alt="Product image" width="800" height="893">
+                          </li> 
+                        {% endif %}   
+                      {% endfor %}          
                   </ul>
                   <div class="clearfix"></div>
               </div>
@@ -44,7 +47,7 @@
           <div class="col-md-6">
               <div class="single-product-des">
                   <h2 class="product-title">{{ product.name }}</h2>
-                  <div class="single-product-price">{{ product.price }}</div>
+                  <div class="single-product-price"><span>$</span>{{ product.price }}</div>
                   <div class="single-product-rating">
                       <span class="rating mr-2">
                           <span class="fas fa-star"></span>
@@ -56,28 +59,20 @@
                       <a href="#" class="rating-count">(2 customer review)</a>
                   </div>
                   <div class="single-product-deta">
-                      <p>
-                          Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis
-                          bibendum auctor, nisi elit consequat ipsum,
-                          nec sagittis sem nibh id elit. Duis sed odio sit amet nibh vulputate cursus a sit
-                          amet
-                          mauris. Morbi accumsan ipsum velit. Nam nec tellus a odio tincidunt auctor a ornare
-                          odio.
-                          Sed ut imperdiet nisi. Proin condimentum fermentum.
-                      </p>
+                      <p>{{product.description}}</p>
                       <div class="add-to-cart-warp">
+                        <form action="{{ url_for('view.buynow') }}" method="post">
                           <div class="quantity d-flex mr-15px">
                               <input type="number" step="1" min="1" name="quantity" value="1" title="Qty"
                                   class="input-text qty text total-quantity" size="2">
                           </div>
-                          <a href="#" class="btn btn-add-cart rounded-1">Add To Cart </a>
+                          <button type="submit" class="btn btn-fill">Buy Now</button>
                           <div class="clearfix"></div>
+                        </form>
                       </div>
                       <ul class="single-product-meta">
                           <li>
-                              <span class="meta-name">SKU:</span>007</li>
-                          <li>
-                              <span class="meta-name">Category:</span> Exclusive</li>
+                              <span class="meta-name">Category:</span>{{ category_name }}</li>
                           <li>
                               <span class="meta-name">Tags:</span> Top, Dress,</li>
                       </ul>
@@ -107,57 +102,21 @@
                       <div role="tabpanel" class="tab-pane fade show active" id="ideas">
                           <div class="row">
                               <div class="col-md-12">
-                                  <p>Quisque sollicitudin lacinia sapien, eu tincidunt nunc accumsan laoreet.
-                                      Curabitur
-                                      feugiat posuere odio nec tincidunt. Pellentesque sagittis nibh
-                                      venenatis
-                                      sapieni congue consectetur. Integer nulla nunc, efficitur sit amet
-                                      sagittis
-                                      sed, suscipit et magna. Nulla porttitor neque non dapibus nec elit
-                                      tristique
-                                      sagittis. Maecenas viverra tortor sed magna volutpat, sed semper leo
-                                      interdum.
-                                      Donec pharetra nulla eu mi mattis gravida.
-                                  </p>
-                                  <p>Proin blandit vulputate diam quis pulvinar. Fusce non libero sodales,
-                                      dictum
-                                      sem sed, ornare enim. Maecenas efficitur est vel placerat eleifend.
-                                      Donec
-                                      vel quam sollicitudin, bibendum odio eget, varius elit. Fusce semper
-                                      mauris
-                                      ut elit dignissim, ac imperdiet massa ullamcorper.
-                                  </p>
+                                  <p>{{ product.additional_info }}</p>
                               </div>
                           </div>
                       </div>
                       <div role="tabpanel" class="tab-pane fade" id="code-quality">
                           <div class="row">
                               <div class="col-md-12">
-                                  <p>Code Quality ipsum dolor sit amet, consectetuer adipiscing elit, sed
-                                      diam nonummy
-                                      nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-                                      Ut
-                                      wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
-                                      suscipit
-                                      lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum
-                                      iriure
-                                      dolor in hendrerit.
-                                  </p>
+                                  <p>{{ product.description }}</p>
                               </div>
                           </div>
                       </div>
                       <div role="tabpanel" class="tab-pane fade" id="visual-design">
                           <div class="row">
                               <div class="col-md-12">
-                                  <p>Visual Design ipsum dolor sit amet, consectetuer adipiscing elit, sed
-                                      diam nonummy
-                                      nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-                                      Ut
-                                      wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
-                                      suscipit
-                                      lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum
-                                      iriure
-                                      dolor in hendrerit.
+                                  <p>Static Reviews
                                   </p>
                               </div>
                           </div>
@@ -176,8 +135,8 @@
       <ul class="row products">
           <li class="product col-md-6 col-lg-3">
               <div class="product-img-wrapper">
-                  <a href="shop-single-product.html">
-                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/1.jpg') }}" alt="Product image">
+                  <a href="12">
+                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/9.jpg') }}" alt="Product image">
                   </a>
                   <a rel="nofollow" href="shop-single-product.html" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                       to cart</a>
@@ -194,8 +153,8 @@
           </li>
           <li class="product col-md-6 col-lg-3">
               <div class="product-img-wrapper">
-                  <a href="shop-single-product.html">
-                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/2.jpg') }}" alt="Product image">
+                  <a href="11">
+                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/8.jpg') }}" alt="Product image">
                   </a>
                   <a rel="nofollow" href="shop-single-product.html" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                       to cart</a>
@@ -212,8 +171,8 @@
           </li>
           <li class="product col-md-6 col-lg-3">
               <div class="product-img-wrapper">
-                  <a href="shop-single-product.html">
-                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/3.jpg') }}" alt="Product image">
+                  <a href="7">
+                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/5.jpg') }}" alt="Product image">
                   </a>
                   <a rel="nofollow" href="shop-single-product.html" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                       to cart</a>
@@ -230,7 +189,7 @@
           </li>
           <li class="product col-md-6 col-lg-3">
               <div class="product-img-wrapper">
-                  <a href="shop-single-product.html">
+                  <a href="6">
                       <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/4.jpg') }}" alt="Product image">
                   </a>
                   <a rel="nofollow" href="shop-single-product.html" class="btn btn-dark rounded-0 btn-add-to-cart">Add

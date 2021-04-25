@@ -1,0 +1,62 @@
+{% extends "admin/dashboard_layout.html" %}
+
+{% block content %}
+  <div class="page-container container scene-main scene-main--fade_In">
+      <div class="container admin-wrapper bg-color-white p-30px">
+          
+          <form method="POST" action="{{ url_for('admin_view.create_product') }}" enctype="multipart/form-data">
+            <div class="row">
+              <div class="form-group col-6">
+                <label>product name</label>
+                <input type="hidden" name="is_available" value="true">
+                <input type="text" class="form-control" name="name">
+              </div>
+
+              <div class="form-group col-6">
+                <label>product price</label>
+                <input type="text" class="form-control" name="price">
+              </div>
+              
+              <div class="form-group col-6">
+                <label>product discount</label>
+                <input type="text" class="form-control" name="discount">
+              </div>
+              
+              <div class="form-group col-6">
+                <label>Category</label>
+                <select name="category_id" class="custom-dropdown">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+                
+              <div class="form-group col-6">
+                <label>product image</label>
+                <input type="file" class="form-control" name="product_image">
+              </div>
+
+              <div class="form-group col-6">
+                <label>product other images</label>
+                <input type="file" class="form-control" name="product_other_images" multiple>
+              </div>
+
+              <div class="form-group col-6">
+                <label>Description</label>
+                <textarea class="form-control" name="description" rows="3"></textarea>
+              </div>
+
+              <div class="form-group col-6">
+                <label>additional Information</label>
+                <textarea class="form-control" name="additional_info" rows="3"></textarea>
+              </div>
+
+              <div class="col-12 text-right">
+                <button class="btn btn-fill" type="submit">Add</button>
+              </div> 
+            </div>
+            </form>
+      </div>
+  </div>
+
+{% endblock %}

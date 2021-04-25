@@ -10,29 +10,33 @@ from argon2 import PasswordHasher
 import logging
 from sqlalchemy import desc
 import flask_jwt_extended
+from werkzeug.utils import secure_filename 
 import os
 
 ph = PasswordHasher(hash_len=64, salt_len=32)
 
 admin_view = Blueprint("admin_view", __name__)
 
-@admin_view.route("/admin_dashboard/")
+@admin_view.route("/admin/")
 @flask_jwt_extended.jwt_required
 def admin_dashboard():
     id = flask_jwt_extended.get_jwt_identity()
     user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
+    if user_type.user_type_id == 1:
+        return redirect(url_for("view.products"))
+  
     return render_template("admin/index.html", user_type=user_type.user_type_id)
 
 """ Categories View """
 
-@admin_view.route("/categories")
+@admin_view.route("/admin/categories")
 @flask_jwt_extended.jwt_required
 def categories():
     id = flask_jwt_extended.get_jwt_identity()
     user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
-
+    if user_type.user_type_id == 1:
+        return redirect(url_for("view.products"))
     categories = db_session.query(models.Category).all()
-    
     
     return render_template("admin/categories.html", categories=categories, user_type=user_type.user_type_id)
 
@@ -77,6 +81,8 @@ def delete_category(category_id):
 def products():
     id = flask_jwt_extended.get_jwt_identity()
     user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
+    if user_type.user_type_id == 1:
+        return redirect(url_for("view.products"))
 
     if user_type.user_type_id == 3:
         products = db_session.query(models.Product, models.Category).filter(models.Product.category_id == models.Category.id).all()
@@ -86,28 +92,62 @@ def products():
     categories = db_session.query(models.Category).all()
     return render_template("admin/products.html", products=products, categories=categories, user_type=user_type.user_type_id)
 
+@admin_view.route("/admin/add_product")
+@flask_jwt_extended.jwt_required
+def add_product():
+    categories = db_session.query(models.Category).all()
+    return render_template("admin/add_product.html", categories=categories)
+
 @admin_view.route("/create_product", methods=["POST"])
 @flask_jwt_extended.jwt_required
 def create_product():
     try:
+        id = flask_jwt_extended.get_jwt_identity()
+        
         name = request.form["name"]
         category_id = request.form["category_id"]
         price = request.form["price"]
         discount = request.form["discount"]
         is_available = request.form["is_available"]
+        additional_info = request.form["additional_info"]
+        description = request.form["description"]
 
         if is_available == "true":
             is_available = True
         else:
             is_available = False
 
-        create_product = models.Product(category_id=int(category_id), name=name, price=price, discount=discount, is_available=is_available)
+        create_product = models.Product(category_id=int(category_id), name=name, price=price, discount=discount, is_available=is_available, seller_id=id, description=description, additional_info=additional_info)
         db_session.add(create_product)
         db_session.flush()
         db_session.commit()
     except Exception as e:
         print(e)
         print("failed to create_product")
+
+    try:
+        product_image = request.files["product_image"]
+        product_other_images = request.files.getlist("product_other_images")
+        print(product_image)
+        print(product_other_images)
+        filename = secure_filename(product_image.filename)
+        product_image.save(os.path.join('./static/assets/images/products/', filename))
+
+        profile_image = models.ProductImages(product_id=create_product.id, image_url=str(filename), profile_img=True)
+        db_session.add(profile_image)
+        db_session.flush()
+
+        for other_images in product_other_images:
+            filename = secure_filename(other_images.filename)
+            other_images.save(os.path.join('./static/assets/images/products/', filename))
+            add_image = models.ProductImages(product_id=create_product.id, image_url=str(filename), profile_img=False)
+            db_session.add(add_image)
+            db_session.flush()
+        
+        db_session.commit()
+    except Exception as e:
+        print(e)
+
     return redirect(url_for("admin_view.products"))
 
 @admin_view.route("/update_product", methods=["POST"])
@@ -166,12 +206,14 @@ def upload_images():
 
 """ Users View """
 
-@admin_view.route("/users")
+@admin_view.route("/admin/users")
 @flask_jwt_extended.jwt_required
 def users():
     id = flask_jwt_extended.get_jwt_identity()
     user_type = db_session.query(models.User).filter(models.User.id == int(id)).one_or_none()
-    
+    if user_type.user_type_id == 1:
+        return redirect(url_for("view.products"))
+
     users = db_session.query(models.User).all()
     user_types = db_session.query(models.UserType).all()
     return render_template("admin/users.html", users=users, user_type=user_type.user_type_id)

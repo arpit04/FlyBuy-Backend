@@ -27,6 +27,20 @@ class User(Base):
     user_type_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(UserType.id, ondelete='CASCADE'))
     created_at = sqlalchemy.Column(sqlalchemy.DateTime(), nullable=True)
 
+class UserAddress(Base):
+    __tablename__ = "user_address"
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id, ondelete='CASCADE'))
+    address_name = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    first_name = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    last_name = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    email = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    phone_number = sqlalchemy.Column(sqlalchemy.String(256))
+    address = sqlalchemy.Column(sqlalchemy.String(1000))
+    country = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    state = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    city = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    postal_code = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
 
 class Category(Base):
     """ Database for categories """
@@ -44,6 +58,8 @@ class Product(Base):
     price = sqlalchemy.Column(sqlalchemy.String(60), nullable=True)
     discount = sqlalchemy.Column(sqlalchemy.String(60), nullable=True)
     is_available = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    description = sqlalchemy.Column(sqlalchemy.String(2000), nullable=True)
+    additional_info = sqlalchemy.Column(sqlalchemy.String(2000), nullable=True)
     seller_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id, ondelete='CASCADE'))
 
 
@@ -53,7 +69,7 @@ class ProductImages(Base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     product_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(Product.id, ondelete='CASCADE'))
     image_url = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
-
+    profile_img = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
 class ProductReviews(Base):
     """ Databse table for product_reviews """
