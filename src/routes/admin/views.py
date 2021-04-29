@@ -225,7 +225,7 @@ def create_user():
         name = request.form["name"]
         email = request.form["email"]
         password_hash = request.form["password"]
-        user_type_id = request.form["user_type_id"]
+        user_type_id = "1"
         created_at = datetime.datetime.now()
         create_user = models.User(
             name=name,
@@ -274,3 +274,26 @@ def delete_user(user_id):
     db_session.delete(user)
     db_session.commit()
     return redirect(url_for("admin_view.users"))
+
+""" Orders View """
+
+@admin_view.route("/admin/orders")
+@flask_jwt_extended.jwt_required
+def orders():
+    id = flask_jwt_extended.get_jwt_identity()
+    
+    orders = db_session.query(models.Orders, models.Product, models.User).filter(models.Orders.product_id == models.Product.id, models.Product.seller_id == id, models.User.id == models.Orders.user_id).all()
+
+    return render_template("admin/orders.html", orders=orders)
+
+@admin_view.route("/admin/update_order", methods=["POST"])
+@flask_jwt_extended.jwt_required
+def update_order():
+    id = request.form["id"]
+    status = request.form["status"]
+    order = db_session.query(models.Orders).filter(models.Orders.id == id).one_or_none()
+    if order:
+        order.status = status
+        db_session.commit()
+
+    return redirect(url_for("admin_view.orders"))

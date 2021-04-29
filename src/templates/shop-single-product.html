@@ -47,7 +47,7 @@
           <div class="col-md-6">
               <div class="single-product-des">
                   <h2 class="product-title">{{ product.name }}</h2>
-                  <div class="single-product-price"><span>$</span>{{ product.price }}</div>
+                  <div class="single-product-price"><span>₹</span>{{ product.price }}</div>
                   <div class="single-product-rating">
                       <span class="rating mr-2">
                           <span class="fas fa-star"></span>
@@ -61,14 +61,14 @@
                   <div class="single-product-deta">
                       <p>{{product.description}}</p>
                       <div class="add-to-cart-warp">
-                        <form action="{{ url_for('view.buynow') }}" method="post">
+                        
                           <div class="quantity d-flex mr-15px">
                               <input type="number" step="1" min="1" name="quantity" value="1" title="Qty"
                                   class="input-text qty text total-quantity" size="2">
                           </div>
-                          <button type="submit" class="btn btn-fill">Buy Now</button>
+                          <a type="submit" href="{{ url_for('view.add_to_cart', product_id=product.id) }}" class="btn btn-fill">Add to cart</a>
                           <div class="clearfix"></div>
-                        </form>
+                        
                       </div>
                       <ul class="single-product-meta">
                           <li>
@@ -135,8 +135,8 @@
       <ul class="row products">
           <li class="product col-md-6 col-lg-3">
               <div class="product-img-wrapper">
-                  <a href="12">
-                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/9.jpg') }}" alt="Product image">
+                  <a href="13">
+                      <img width="430" height="480" src="{{ url_for('static', filename='assets/images/products/10.jpg') }}" alt="Product image">
                   </a>
                   <a rel="nofollow" href="shop-single-product.html" class="btn btn-dark rounded-0 btn-add-to-cart">Add
                       to cart</a>
@@ -147,7 +147,7 @@
                   </h6>
                   <span class="price">
                       <span class="amount">
-                          <span class="currencySymbol">$</span>69.00</span>
+                          <span class="currencySymbol">₹</span>69.00</span>
                   </span>
               </div>
           </li>
@@ -165,7 +165,7 @@
                   </h6>
                   <span class="price">
                       <span class="amount">
-                          <span class="currencySymbol">$</span>69.00</span>
+                          <span class="currencySymbol">₹</span>69.00</span>
                   </span>
               </div>
           </li>
@@ -183,7 +183,7 @@
                   </h6>
                   <span class="price">
                       <span class="amount">
-                          <span class="currencySymbol">$</span>69.00</span>
+                          <span class="currencySymbol">₹</span>69.00</span>
                   </span>
               </div>
           </li>
@@ -201,7 +201,7 @@
                   </h6>
                   <span class="price">
                       <span class="amount">
-                          <span class="currencySymbol">$</span>69.00</span>
+                          <span class="currencySymbol">₹</span>69.00</span>
                   </span>
               </div>
           </li>

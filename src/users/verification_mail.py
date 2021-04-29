@@ -1,8 +1,11 @@
-import smtplib
+import smtplib, ssl
 from argon2 import PasswordHasher
 from datetime import datetime, timedelta
 from src.database import db_session
 import src.models as models
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 ph = PasswordHasher(hash_len=64, salt_len=32)
 
@@ -28,24 +31,61 @@ def send_mail(id, handle, email, email_type):
     try:
         print("sending verification email...")
         the_token = the_token.replace("/", "_")
-        ob = smtplib.SMTP("smtp.gmail.com", 587)
-        ob.starttls()
-        ob.login("arpitraval786@gmail.com", "earth@#0402") #sender mail id and password
-
+  
         if email_type == "new-user":
-            body = f"""Hello, {handle} follow this link to validate your email
-            127.0.0.1:5000/validate_user/{the_token}"""
-            subject = f"User Account Validation"
+           pass
 
-        if email_type == "reset-user":
-            body = f"""Welcome back, {handle} follow this link to reset your password
-            127.0.0.1:5000/reset_pass/{the_token}"""
-            subject = f"User Account Validation"
+        html = f"""
+                <html>
+                    <body>
+                        <a href="http://127.0.0.1:5000/validate_user/{the_token}">
+                            click here
+                        </a>
+                    </body>
+                </html>"""
 
-        message = "Subject:{}\n\n{}".format(subject, body)
+        html = f"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+            <div style="background-color:#eee;padding:10px 20px;">
+                <h2 style="font-family:Georgia, 'Times New Roman', Times, serif;color#454349;">FlyBuy Verification</h2>
+            </div>
+            <div style="padding:20px 0px">
+                <a href="http://127.0.0.1:5000/validate_user/{the_token}">
+                    click here
+                </a>
+            </div>
+            </div>
+        </body>
+        </html>
+        """
 
-        ob.sendmail("arpitraval786@gmail.com", [email], message) #sender mail id
-        ob.quit()
+        port = 465  # For SSL
+        sender_email = "arpitraval786@gmail.com"
+        password = "earth@#0402"
+
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "User Account Validation"
+        message["From"] = sender_email
+        message["To"] = email
+
+
+        part2 = MIMEText(html, "html")  
+        message.attach(part2)
+
+       
+        context = ssl.create_default_context()
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, email, message.as_string())
+
+        if email_type == "reset-user": 
+            msg = MIMEText(u'<html><body><a href="127.0.0.1:5000/reset_pass/{the_token}">click here</a></body></html>','html')
+            body = f"""Hello, {handle} follow this link to validate your email \n {msg}"""
+            subject = "User Account Validation"
+
     except Exception as e:
         print(e)
         print("[ ERROR ] Sending Mail failed")

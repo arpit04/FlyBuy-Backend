@@ -5,6 +5,12 @@
 <div class="container single-product-content bg-color-white pt-15px pb-20px">
   <form method="post" action="{{ url_for('view.edit_delivery_address') }}">
     <div class="row">
+
+    <div class="form-group col-12">
+      <label>Address Name</label>
+      <input type="text" class="form-control" name="address_name" value="{{ address.address_name }}">
+    </div>
+
     <div class="form-group col-6">
       <label>First Name</label>
       <input type="hidden" name="address_id" value="{{ address.id }}">

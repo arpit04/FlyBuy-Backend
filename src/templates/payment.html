@@ -1,9 +1,16 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <div class="container single-product-content bg-color-white pt-15px pb-20px">
-  <form>
+  <label for="fname">Accepted Cards</label>
+  <div class="icon-container">
+   <i class="fa fa-cc-visa  fa-2x" style="color:navy;"></i>
+    <i class="fa fa-cc-amex fa-2x" style="color:blue;"></i>
+    <i class="fa fa-cc-mastercard fa-2x" style="color:red;"></i>
+    <i class="fa fa-cc-discover fa-2x" style="color:orange;"></i>
+  </div>
+  <form action="{{ url_for('view.payment_card') }}" method="post">
     <div class="row">
       <div class="form-group col-6">
        <label>Name on Card</label>
@@ -22,7 +29,7 @@
         <input type="number" class="form-control"  name="cvv">
       </div>
       <div class="col-12 text-right">
-        <button class="btn btn-fill">Continue to Checkout</button>
+        <button class="btn btn-fill">Confirm</button>
       </div>
     </div>
   </form>

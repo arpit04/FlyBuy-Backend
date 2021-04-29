@@ -5409,3 +5409,11 @@ background: #00bcd4;color: #fff;font-weight: bold;
   width: 100%;
   padding-left: 30px;
 }
+
+.place-order {
+ background: #dddddd;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}

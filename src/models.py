@@ -88,6 +88,16 @@ class Cart(Base):
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id, ondelete='CASCADE'))
     product_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(Product.id, ondelete='CASCADE'))
     
+class Orders(Base):
+    """ Databse table for orders """
+    __tablename__ = "orders"
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id, ondelete='CASCADE'))
+    order_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(UserAddress.id, ondelete='CASCADE'))
+    product_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(Product.id, ondelete='CASCADE'))
+    status = sqlalchemy.Column(sqlalchemy.String(256), nullable=True)
+    created_at = sqlalchemy.Column(sqlalchemy.DateTime(), nullable=True)
+
 
 class ValidationToken(Base):
     """ Database table for validation tokens """

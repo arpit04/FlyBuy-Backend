@@ -41,6 +41,7 @@ def edit_address(address_id):
 def edit_delivery_address():
     address_id = request.form["address_id"]
     address = db_session.query(models.UserAddress).filter(models.UserAddress.id == int(address_id)).one_or_none()
+    address.address_name = request.form["address_name"]
     address.first_name = request.form["first_name"]
     address.last_name = request.form["last_name"]
     address.email = request.form["email"]
@@ -65,6 +66,7 @@ def edit_delivery_address():
 def add_address():
     try:
         user_id = flask_jwt_extended.get_jwt_identity()
+        address_name = request.form["address_name"]
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
         email = request.form["email"]
@@ -76,6 +78,7 @@ def add_address():
         postal_code = request.form["postal_code"]
         
         add_address = models.UserAddress(
+            address_name=address_name,
             user_id=user_id,
             first_name=first_name,
             last_name=last_name,
@@ -101,6 +104,56 @@ def add_address():
         db_session.rollback()
         return redirect(url_for("view.checkout"))
         
+    return redirect(url_for("view.cart"))
+
+@view.route("/orders")
+@flask_jwt_extended.jwt_required
+def orders():
+    user_id = flask_jwt_extended.get_jwt_identity()
+    cart_list = db_session.query(models.Orders, models.Product, models.ProductImages).filter(models.Orders.product_id == models.Product.id).filter(models.Orders.user_id == user_id).filter(models.ProductImages.product_id == models.Orders.product_id, models.ProductImages.profile_img == True).all()
+    return render_template("orders.html", cart_list=cart_list)
+
+@view.route("/place_order", methods=["GET", "POST"])
+@flask_jwt_extended.jwt_required
+def place_order():
+    user_id = flask_jwt_extended.get_jwt_identity()
+    cart_list = db_session.query(models.Cart).filter(models.Cart.user_id == user_id).all()
+    try:
+        address_id = request.form["address"]
+        created_at = datetime.datetime.now()
+        for cart in cart_list:
+            create_order = models.Orders(
+                order_id=address_id,
+                user_id=user_id,
+                product_id=cart.product_id,
+                status='pending',
+                created_at=created_at,
+            )
+            db_session.add(create_order)
+            db_session.flush()
+    except Exception as e:
+        print(e)
+        return redirect(url_for("view.cart"))
+
+    try:
+        db_session.commit()
+    except Exception as e:
+        print(e)
+        db_session.rollback()
+        return redirect(url_for("view.cart"))
+
+    return redirect(url_for("view.orders"))
+
+@view.route("/upi")
+@flask_jwt_extended.jwt_required
+def upi():
+    pass
+    return render_template("upi.html")
+
+@view.route("/payment_card", methods=["GET", "POST"])
+@flask_jwt_extended.jwt_required
+def payment_card():
+    print(request.form)
     return redirect(url_for("view.cart"))
 
 @view.route("/payment")
@@ -208,7 +261,7 @@ def products_by_category(category_id):
     try:
         user_id = flask_jwt_extended.get_jwt_identity()
         is_login = session.get("logged_in")
-        products = db_session.query(models.Product, models.ProductImages).filter(models.Product.id == models.ProductImages.product_id, models.Product.category_id == category_id, models.ProductImages.profile_img == True).all()
+        products = db_session.query(models.Product, models.ProductImages).filter(models.Product.id == models.ProductImages.product_id, models.Product.category_id == category_id, models.ProductImages.profile_img == True).order_by(desc(models.Product.id)).all()
         categories = db_session.query(models.Category).all()
         cart_count = db_session.query(models.Cart, models.Product).filter(models.Cart.product_id == models.Product.id).filter(models.Cart.user_id == user_id).count()
     except Exception as e:
@@ -276,18 +329,25 @@ def user_login():
             return resp
     except Exception as e:
         print(e)
-
-    return redirect(url_for("view.user"))
+    if user.user_type_id == 1:
+        print(user.user_type_id)
+        print(user.name)
+        return redirect(url_for("view.user"))
+    else:
+        return redirect(url_for("admin_view.admin_dashboard"))
+    
 
 @view.route("/validate_user/<the_token>")
 def validate_user(the_token):
     res = verification_mail.validate_email(the_token)
     if not res:
-        message = "verification failed <br><span> link expired or invalid token</span>"
-        return render_template("user_verification.html", message=message)
+        message1 = "verification failed"
+        message2 = "link expired or invalid token"
+        return render_template("user_verification.html", message1=message1, message2=message2)
 
-    message = "Thanks for registration <br><span> Now you can access your account</span>"
-    return render_template("user_verification.html", message=message)
+    message1 = "Thanks for registration"
+    message2 = "Now you can access your account"
+    return render_template("user_verification.html", message1=message1, message2=message2)
 
 @view.route("/register")
 def register():
@@ -303,7 +363,7 @@ def registration():
         name = request.form["name"]
         email = request.form["email"]
         password_hash = request.form["password"]
-        user_type_id = request.form["user_type_id"]
+        user_type_id = 1
         created_at = datetime.datetime.now()
         create_user = models.User(
             name=name,

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+  <div class="container single-product-content bg-color-white pt-15px pb-20px">
+      <h5>Order History</h5>
+      <div class="row">
+          <div class="col-lg-12">
+
+              <ul class="product-images-gallery">
+                
+                {% for cart in cart_list %}
+                  <li class="cart-list-item">
+                      <div class="d-flex item-detail">
+                        <a href="{{ url_for('view.product', id=cart[1].id) }}">
+                          <img src="{{ url_for('static', filename='assets/images/products/') }}{{ cart[2].image_url }}" 
+                          alt="Product image" width="150" height="150">
+                        </a>
+                          <div class="single-product-des pt-0">
+                              <h5 class="product-title pb-0">{{ cart[1].name }}</h5>
+                              <div class="quantity d-flex m-0">
+                                  <div class="ml-15px mb-0 single-product-price"><span>₹</span> <strong id="product_price">{{ cart[1].price }}</strong></div>
+                              </div>
+                          </div>
+                        <div><p>{{ cart[0].status }}</p></div>
+                      </div>
+                      <div class="separator-line"></div>
+                  </li>
+
+                {% endfor %}
+             
+
+              </ul>    
+          </div>
+      </div>
+  </div>
+  
+
+{% endblock %}

@@ -4,22 +4,21 @@
 
 <div class="container single-product-content bg-color-white pt-15px pb-20px">
   <form method="post" action="{{ url_for('view.add_address') }}">
-    <div class="form-group col-3">
-      <label>Address Name</label>
-      <input type="text" class="form-control" value="Address({{ address_count }})" name="first_name">
-    </div>
-    <div class="row">
 
-    
+    <div class="row">
+    <div class="form-group col-12">
+      <label>Address Name</label>
+      <input type="text" class="form-control" value="Address({{ address_count }})" name="address_name" required>
+    </div>
 
     <div class="form-group col-6">
       <label>First Name</label>
-      <input type="text" class="form-control" name="first_name">
+      <input type="text" class="form-control" name="first_name" required>
     </div>
 
     <div class="form-group col-6">
       <label>Last Name</label>
-      <input type="text" class="form-control" name="last_name">
+      <input type="text" class="form-control" name="last_name" required >
     </div>
     
     <div class="form-group col-6">
@@ -29,17 +28,17 @@
 
     <div class="form-group col-6">
       <label>Phone Number</label>
-      <input type="number" class="form-control" name="phone_number">
+      <input type="number" class="form-control" name="phone_number" required>
     </div>
 
     <div class="form-group col-12">
       <label>Address</label>
-      <textarea name="address" class="form-control" rows="3"></textarea>
+      <textarea name="address" class="form-control" rows="3" required></textarea>
     </div>
     
     <div class="form-group col-6">
       <label>Country</label>
-      <input list="countries" class="form-control" name="country">
+      <input list="countries" class="form-control" name="country" required>
       <datalist id="countries">
         <option value="India">
         <option value="Canada">
@@ -49,7 +48,7 @@
     
     <div class="form-group col-6">
       <label>State</label>
-      <input list="states" class="form-control" name="state">
+      <input list="states" class="form-control" name="state" required>
       <datalist id="states">
         <option value="Gujarat">
         <option value="Rajsthan">
@@ -59,7 +58,7 @@
     
     <div class="form-group col-6">
       <label>City</label>
-      <input list="cities" class="form-control" name="city">
+      <input list="cities" class="form-control" name="city" required>
       <datalist id="cities">
         <option value="Ahmedabad">
         <option value="Gandhinagar">
@@ -69,11 +68,11 @@
     
     <div class="form-group col-6">
       <label>Postal Code</label>
-      <input type="text" class="form-control" name="postal_code">
+      <input type="text" class="form-control" name="postal_code" required>
     </div>
 
     <div class="col-12 text-right">
-      <button class="btn btn-fill" type="submit">Continue to checkout</button>
+      <button class="btn btn-fill" type="submit">Add</button>
     </div>
     
   </div>

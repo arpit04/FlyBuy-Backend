@@ -31,7 +31,7 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-md navbar-light">
             <div class="container-fluid mx-0 mx-md-20px mx-lg-60px">
-                <a class="navbar-brand" href="{{ url_for('admin_view.admin_dashboard') }}">
+                <a class="navbar-brand" href="{{ url_for('view.products') }}">
                     <img class="etcodes-normal-logo" src="{{ url_for('static', filename='assets/images/logo_1.png') }}" width="85" height="22" alt="Logo">
                     <img class="etcodes-mobile-logo" src="{{ url_for('static', filename='assets/images/logo_1.png') }}" width="65" height="22" alt="Logo">
                 </a>
@@ -44,6 +44,11 @@
                         <li class="nav-item active">
                             <a class="nav-link" href="{{ url_for('admin_view.admin_dashboard') }}">Dashboard</a>
                         </li>
+                        {% if user_type == 2 %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url_for('admin_view.orders') }}">Orders</a>
+                        </li>
+                        {% endif %}
                         {% if user_type == 3 %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('admin_view.categories') }}">Categories</a>

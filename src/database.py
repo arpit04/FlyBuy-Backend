@@ -15,7 +15,7 @@ db_host = "127.0.0.1"
 db_port = 5432
 
 uri_string = f"postgres://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-engine = create_engine(uri_string)
+engine = create_engine(uri_string, pool_size=20, max_overflow=0)
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine)
 )

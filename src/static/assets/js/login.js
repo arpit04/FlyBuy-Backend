@@ -120,10 +120,12 @@
                 // here is process after ajax success
             },
             error : function(data) {
-                console.log("bbb");
+                console.log(data);
                 // here is the process of after ajax fail
             }
         });
     }
+
+    
 
 })(jQuery);

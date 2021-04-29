@@ -3,10 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <link href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}" rel="stylesheet">
   </head>
   <body>
-    <h3>
-      {{ message }}
-    </h3>
+    <div class="jumbotron text-center">
+  <h1 class="display-3">Thank You!</h1>
+  <p class="lead"><strong>Please check your email</strong> for further instructions on how to complete your account setup.</p>
+  <hr>
+  <img class="etcodes-normal-logo" src="{{ url_for('static', filename='assets/images/logo_1.png') }}" width="85" height="90" alt="Logo">
+  <p class="lead">
+    <a class="btn btn-primary btn-sm" href="{{ url_for('view.user') }}" role="button">Continue to homepage</a>
+  </p>
+</div>
   </body>
 </html>
